@@ -1,7 +1,7 @@
 mdqc
 ====
 
-Tool to validate metadata against a user-generated set of rules.
+Tool to validate metadata against a user-generated set of rules.  Dependent on exiftool in $PATH
 
 Currently supports exiftool; in the future, will support more metadata input.  See JIRA for more information.
 

@@ -136,7 +136,7 @@ if __name__ == "__main__":
 		f = open(fn, 'w+')
 		readMeta(sys.argv[2])
 		for n in range(len(fie)):
-			str = fie[n] + ",XX," + val[n] + "\n"
+			str = fie[n] + "\tXX\t" + val[n] + "\n"
 			f.write(str)
 
 	elif sys.argv[1] == "-v":

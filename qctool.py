@@ -104,15 +104,27 @@ def clear():
 	del fld[:]
 	return
 
-def readMeta(f):
+# function using exiftool to read image metadata
+def readTIF(f):
 	tmp = subprocess.check_output(["exiftool", f]).splitlines()
 	for x in range(len(tmp)):
 		fie.append(tmp[x].split(':', 1)[0].strip())
 		val.append(tmp[x].split(':', 1)[1].strip())
-	# eventually, this is going to support other metadata tools
-	# I just need to get them running on this machine
 	return
 
+# function using BWF MetaEdit to read WAV(+bext) metadata
+def readWAV(f):
+	tech = subprocess.check_output(["bwfmetaedit", "--out-tech", f]).splitlines()
+	core = subprocess.check_output(["bwfmetaedit", "--out-core", f]).splitlines()
+	for n in range(0, 18, 1):
+		fie.append(tech[0].split(',')[n])
+		val.append(tech[2].split(',')[n])
+	for n in range(1, 32, 1):
+		fie.append(core[0].split(',')[n])
+		val.append(core[2].split(',')[n])
+	return
+
+# help output in case of bad input
 def help():
 	print "Invalid input"
 	print "Usage: qctool -g [reference file]"
@@ -121,6 +133,10 @@ def help():
 	print "       qctool -v [directory] [rules]"
 	print "       (Validates files against rules)"
 	return
+
+# would be nice to have a function to ID filetypes
+# and not have to repeat all these if/elif statements...
+
 ### MAIN ###
 
 if __name__ == "__main__":
@@ -134,7 +150,10 @@ if __name__ == "__main__":
 	elif sys.argv[1] == "-g":
 		fn = "rules_" + d + ".txt"
 		f = open(fn, 'w+')
-		readMeta(sys.argv[2])
+		if ".tif" in sys.argv[2]:
+			readTIF(sys.argv[2])
+		if ".wav" in sys.argv[2]:
+			readWAV(sys.argv[2])
 		for n in range(len(fie)):
 			str = fie[n] + "\tXX\t" + val[n] + "\n"
 			f.write(str)
@@ -145,11 +164,17 @@ if __name__ == "__main__":
 				p1.append(os.path.join(root, file))
 
 		for a in range(len(p1)):
-			if ".tif" in p1[a] or if ".jp" in p1[a]:
+			if ".tif" in p1[a]:
 				imgs.append(p1[a])
+			if ".wav" in p1[a]:
+				imgs.append(p1[a])
+
 		for n in range(len(imgs)):
 			result = str(imgs[n]) + ":"
-			readMeta(imgs[n])
+			if ".tif" in imgs[n]:
+				readTIF(imgs[n])
+			if ".wav" in imgs[n]:
+				readWAV(imgs[n])
 			template(sys.argv[3])
 			good = True
 			logfile = "log_" + d + ".txt"

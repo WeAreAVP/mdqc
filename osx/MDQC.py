@@ -389,7 +389,7 @@ class Scanner(QWidget):
 	def test(self):
 		rpath = reportdir + "report_" + \
 		str(datetime.datetime.now()).replace(' ', '').replace(':', '').\
-				replace('-', '').rpartition('.')[0] + ".csv"
+				replace('-', '').rpartition('.')[0] + ".tsv"
 		report = open(rpath, 'w')
 		
 		report.write("METADATA QUALITY CONTROL REPORT\n" + \

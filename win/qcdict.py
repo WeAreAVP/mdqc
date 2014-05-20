@@ -204,14 +204,14 @@ def validate(file, rules, type):
 		elif x is 1:
 			result += path.abspath(file) + ": FAILED at " + r[0] + \
 				" (tag not found)\n"
-			report += path.abspath(file) + "\tFAILED\ttag not found\n"
+			report += path.abspath(file) + "\tFAILED\ttag not found\t" + r[0] + "\n"
 			valid = False
 		elif x is 3:
 			result += path.abspath(file) + \
 				": Malformed comparison operator (" + \
 				op + " does not operate on " + meta[r[0]] + \
 				" and " + r[2] + ")\n"
-			report += path.abspath(file) + "\tFAILED\t" + op + "\tdoes not operate\n"
+			report += path.abspath(file) + "\tFAILED\t" + op + "\tdoes not operate\t" + meta[r[0]] + "\n"
 			valid = False
 	if valid:
 		return path.abspath(file) + ": PASSED", path.abspath(file) + "\tPASSED\n"

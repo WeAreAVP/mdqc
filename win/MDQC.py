@@ -88,7 +88,7 @@ class MainWin(QMainWindow):
 		self.dd.clicked.connect(self.setd)
 		self.scan.clicked.connect(self.scanner)
 		
-		self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+		#self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
 		self.setCentralWidget(self.widget)
 
 	# invokes the window to set metadata rules
@@ -195,7 +195,7 @@ class MainWin(QMainWindow):
 class TagRuleWin(QWidget):
 	def __init__(self, file):
 		QWidget.__init__(self)
-		self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+		#self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
 		self.scroll = QScrollArea()
 		self.setWindowTitle("Rule Generation")
 		self.layout = QVBoxLayout(self)
@@ -291,7 +291,7 @@ class DirRuleWin(QWidget):
 		QWidget.__init__(self)
 		self.field, self.op, self.val, self.add = [], [], [], []
 
-		self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+		#self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
 		self.setWindowTitle("File Matching Rules")
 		self.scroll = QScrollArea()
 		self.layout = QVBoxLayout(self)
@@ -372,7 +372,7 @@ class Scanner(QWidget):
 		self.d = dir.rstrip()
 		
 		self.db = self.makeList()
-		self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+		#self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
 		self.setWindowTitle('Metadata Quality Control')
 		self.lay = QVBoxLayout(self)
 		xit = QPushButton("Exit", self)

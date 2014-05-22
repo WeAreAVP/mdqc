@@ -96,6 +96,8 @@ class MainWin(QMainWindow):
     def checkForTool(self):
 
         exif_tool_found = True
+        exif_not_found_msg = "ExifTool not found. Please download the .dmg from the following url and install: <a href='http://www.sno.phy.queensu.ca/~phil/exiftool/'>http://www.sno.phy.queensu.ca/~phil/exiftool/</a>"
+        mediainfo_not_found_msg = "MediaInfo not found. Please download the CLI version from the following url and install: <a href='http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS'>http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS</a>"
         try:
             subprocess.Popen(['/usr/bin/exiftool'])
         except OSError:
@@ -104,6 +106,7 @@ class MainWin(QMainWindow):
             except OSError:
                 exif_tool_found = False
                 pass
+
 
         media_info_found = True
         try:
@@ -117,22 +120,22 @@ class MainWin(QMainWindow):
 
 
         if exif_tool_found is False and media_info_found is False:
-            QMessageBox.warning(self,
-                                 "Media Info and Exif Tool Missing ", "MediaInfo and ExifTool are not found. Please download the CLI version from the following url and install: <a href='http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS'>http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS</a> and \n \n Please also download the .dmg from the following url and install: <a href='http://www.sno.phy.queensu.ca/~phil/exiftool/'>http://www.sno.phy.queensu.ca/~phil/exiftool/</a>" )
+            QMessageBox.critical(self,
+                                 None,
+                                str(exif_not_found_msg) +' <br/> <br/>'+ str(mediainfo_not_found_msg) )
             exit()
 
         elif exif_tool_found is False:
-            QMessageBox.warning(self,
-                                 "Exif Tool Missing",
-                                 "ExifTool not found. Please download the .dmg from the following url and install: " +
-                                 "<a href='http://www.sno.phy.queensu.ca/~phil/exiftool/'>http://www.sno.phy.queensu.ca/~phil/exiftool/</a>")
+            QMessageBox.critical(self,
+                                 None,
+                                 exif_not_found_msg
+                                 )
             exit()
 
         elif media_info_found is False:
-            QMessageBox.warning(self,
-                                 "Media Info Missing",
-                                 "MediaInfo not found. Please download the CLI version from the following url and install: " +
-                                 "<a href='http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS'>http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS</a>")
+            QMessageBox.critical(self,
+                                 None,
+                                 mediainfo_not_found_msg )
             exit()
 
 

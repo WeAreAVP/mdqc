@@ -28,8 +28,6 @@ isExif = True
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-
-        self.checkForTool()
         menubar = self.menuBar()
         file = menubar.addMenu('&File')
         save = QAction('&Save Template', self)
@@ -94,49 +92,62 @@ class MainWin(QMainWindow):
 
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
     def checkForTool(self):
-
+        print('asdas')
         exif_tool_found = True
         exif_not_found_msg = "ExifTool not found. Please download the .dmg from the following url and install: <a href='http://www.sno.phy.queensu.ca/~phil/exiftool/'>http://www.sno.phy.queensu.ca/~phil/exiftool/</a>"
         mediainfo_not_found_msg = "MediaInfo not found. Please download the CLI version from the following url and install: <a href='http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS'>http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS</a>"
         try:
+            print('1')
             subprocess.Popen(['/usr/bin/exiftool'])
         except OSError:
+            print('2')
             try:
+                print('3')
                 subprocess.Popen(['/usr/local/bin/exiftool'])
             except OSError:
+                print('4')
                 exif_tool_found = False
                 pass
 
 
         media_info_found = True
         try:
+            print('5')
             subprocess.Popen(['/usr/bin/mediainfo'])
         except OSError:
             try:
+                print('6')
                 subprocess.Popen(['/usr/local/bin/mediainfo'])
             except OSError:
+                print('7')
                 media_info_found = False
                 pass
 
 
         if exif_tool_found is False and media_info_found is False:
+            print('8')
             QMessageBox.critical(self,
                                  None,
-                                str(exif_not_found_msg) +' <br/> <br/>'+ str(mediainfo_not_found_msg) )
-            exit()
+                                str(exif_not_found_msg) + ' <br/> <br/>' + str(mediainfo_not_found_msg) )
+            return False
+
 
         elif exif_tool_found is False:
+            print('9')
             QMessageBox.critical(self,
                                  None,
                                  exif_not_found_msg
                                  )
-            exit()
+            return False
+
 
         elif media_info_found is False:
             QMessageBox.critical(self,
                                  None,
                                  mediainfo_not_found_msg )
-            exit()
+            return False
+
+        return True
 
 
     # invokes the window to set metadata rules
@@ -402,7 +413,7 @@ class DirRuleWin(QWidget):
                 if self.op[n].currentIndex() == 6:
                     regexes.append((6, v, re.compile(v + "$")))
         self.close()
-		
+
 # window to display test results
 class Scanner(QWidget):
     def __init__(self, dir):
@@ -512,5 +523,7 @@ class Scanner(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWin()
-    w.show()
-    sys.exit(app.exec_())
+    response = w.checkForTool()
+    if response:
+        w.show()
+        sys.exit(app.exec_())

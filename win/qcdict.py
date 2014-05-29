@@ -26,7 +26,7 @@ def template(tpl):
 
 def exifMeta(file):
 	meta = defaultdict(list)
-	fp = 'exiftool.exe'
+	fp = 'tools\\exiftool.exe'
 	
 	# flags to suppress console generation
 	startupinfo = subprocess.STARTUPINFO()
@@ -64,7 +64,7 @@ def exifMeta(file):
 # returns: defaultdict of {tag: value} pairs
 def mnfoMeta(file):
 	meta = defaultdict(list)
-	fp = 'mediainfo\\MediaInfo.exe'
+	fp = 'tools\\MediaInfo.exe'
 
 	# flags to suppress console generation
 	startupinfo = subprocess.STARTUPINFO()

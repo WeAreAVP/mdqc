@@ -422,6 +422,7 @@ class Scanner(QWidget):
         self.setLayout(self.lay)
         self.resize(800, 300)
         self.show()
+
         self.test()
         xit.setEnabled(True)
 
@@ -435,6 +436,7 @@ class Scanner(QWidget):
         return rules
 
     def test(self):
+
         rpath = reportdir + "report_" + \
         str(datetime.datetime.now()).replace(' ', '').replace(':', '').\
                 replace('-', '').rpartition('.')[0] + ".tsv"

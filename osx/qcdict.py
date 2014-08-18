@@ -168,7 +168,6 @@ def verify(rule, dict):
 # and compares each rule tuple against it
 # in addition, it generates the output string for the asset, 
 # providing a natural-language description of what happened
-
 def validate(file, rules, type):
     verified_files = {}
 
@@ -205,18 +204,18 @@ def validate(file, rules, type):
             result += path.abspath(file) + ": FAILED at " + r[0] + " (" + meta[r[0]] + " is not " + op + " " + r[2].rstrip() + ")\n"
 
             if file in verified_files:
-                verified_files[file] = str(verified_files[file]) + "\t" + op + " " + r[2].strip() + "\t"
+                verified_files[file] = str(verified_files[file]) + "\t" + str(r[0]) + " not " + op + " " + r[2].strip() + "\t"
             else:
-                verified_files[file] = path.abspath(file) + "\tFAILED\tnot " + op + " " + r[2].strip() + "\t"
+                verified_files[file] = path.abspath(file) + "\tFAILED\t"+ str(r[0]) + " not " + op + " " + r[2].strip() + "\t"
 
             valid = False
         elif x is 1:
             result += path.abspath(file) + ": FAILED at " + r[0] + " (tag not found)\n"
 
             if file in verified_files:
-                verified_files[file] = str(verified_files[file]) + "\ttag not found " + r[0] + "\t"
+                verified_files[file] = str(verified_files[file]) + "\t" + str(r[0]) +" tag not found " + str(r[2]) + "\t"
             else:
-                verified_files[file] = path.abspath(file) + "\tFAILED\ttag not found " + r[0] + "\t"
+                verified_files[file] = path.abspath(file) + "\tFAILED\t" + str(r[0]) +" tag not found " + str(r[2]) + "\t"
 
             valid = False
         elif x is 3:
@@ -226,9 +225,9 @@ def validate(file, rules, type):
                 " and " + r[2] + ")\n"
 
             if file in verified_files:
-                verified_files[file] = str(verified_files[file]) + "\tdoes not operate " + meta[r[0]] + "\t"
+                verified_files[file] = str(verified_files[file]) + "\t"+ str(r[0]) +" does not operate " + meta[r[0]] + "\t"
             else:
-                verified_files[file] = path.abspath(file) + "\tFAILED\t" + op + "\tdoes not operate\t" + meta[r[0]] + "\t"
+                verified_files[file] = path.abspath(file) + "\tFAILED\t" + str(r[0]) + " does not operate " + meta[r[0]] + "\t"
 
             valid = False
 

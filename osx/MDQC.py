@@ -142,7 +142,7 @@ class MainWin(QMainWindow):
     def validate(self):
         global isExif
         isExif = self.exif.isChecked()
-        if str(self.fbox.text()) != '' or len(tags) != 0:
+        if self.fbox.text() != '' or len(tags) != 0:
             self.frule = TagRuleWin(self.fbox.text())
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
@@ -447,8 +447,31 @@ class Scanner(QWidget):
                         "\n\nMETADATA RULES USED\n")
         for n in xrange(len(tags)):
             q = tags[n].text() + "\t" + ops[n].currentText() + \
-                    "\t" + vals[n].text()
-            report.write(q.encode("utf-8"))
+                    "\t"
+
+            try:
+                report.write(q)
+            except:
+                try:
+                    report.write(q.decode("utf-8"))
+                except:
+                    try:
+                        report.write(q.encode("utf-8"))
+                    except:
+                        pass
+                    pass
+
+            try:
+                report.write(vals[n].text().encode('latin1'))
+            except:
+                try:
+                    report.write(vals[n].text())
+                except:
+                    pass
+                pass
+
+
+
             report.write("\n")
 
         report.write("\nSCANNING RULES USED\n")
@@ -489,6 +512,8 @@ class Scanner(QWidget):
         out = ""
         fails = 0
         logging.basicConfig(filename=reportdir+"mdqc.log", level=logging.INFO)
+        # logging.basicConfig(filename="mdqc.log", level=logging.INFO)
+
 
         for rf in fls:
             logging.info("Validating " + rf)
@@ -497,16 +522,28 @@ class Scanner(QWidget):
             except Exception, e:
                 logging.exception(e)
                 continue
-            if not ": PASSED" in l[0].encode('utf8'):
+            if not ": PASSED" in l[0].decode('utf8'):
                 fails += 1
             logging.info("Appending to output..")
             self.te.append(l[0].rstrip())
             logging.info("Encoding to UTF8 and appending...")
-            ul = l[1].encode('utf8')
+            ul = l[1].decode('utf8')
             out += ul
             logging.info("Processing events...")
             QCoreApplication.processEvents()
-        report.write("Files failed\t\t" + str(fails) + "\n\n" + out)
+        report.write("Files failed\t\t" + str(fails) )
+        try:
+            report.write("\n\n" + out)
+        except:
+            try:
+                report.write("\n\n" + out.decode('utf-8'))
+            except:
+
+                report.write("\n\n" + out.encode('utf-8'))
+
+                pass
+            pass
+
         self.te.append("Wrote report to " + path.abspath(rpath))
         report.close()
 

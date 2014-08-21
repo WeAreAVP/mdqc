@@ -24,7 +24,7 @@ def template(tpl):
             rules.append((q[0].strip(), q[1].strip(), q[2].strip()))
     return rules
 
-def exifMeta(file):
+def exifMeta(file_path):
 
     meta = defaultdict(list)
 
@@ -34,31 +34,41 @@ def exifMeta(file):
     except OSError:
         fp = '/usr/local/bin/exiftool'
 
-    # executes exiftool against the media file with group output
-    # exiftool is run twice: once for all but filesize,
-    #				and one specifically for filesize
-    # this is due to filesize requiring precise numerical output
-    p = subprocess.Popen([fp, '-t', '-G', '--filesize', file], stdout=subprocess.PIPE)
-    out = p.communicate()[0].splitlines()
-    p.stdout.close()
+
     try:
-        p.terminate()
+        file_path = file_path.decode('utf-8')
     except:
         pass
-    q = subprocess.Popen([fp, '-t', '-G', '-filesize#', file], stdout=subprocess.PIPE)
-    out += q.communicate()[0].splitlines()
-    q.stdout.close()
+
     try:
-        q.terminate()
+        # executes exiftool against the media file with group output
+        # exiftool is run twice: once for all but filesize,
+        #				and one specifically for filesize
+        # this is due to filesize requiring precise numerical output
+        p = subprocess.Popen([fp, '-t', '-G', '--filesize', file_path], stdout=subprocess.PIPE)
+        out = p.communicate()[0].splitlines()
+        p.stdout.close()
+        try:
+            p.terminate()
+        except:
+            pass
+        q = subprocess.Popen([fp, '-t', '-G', '-filesize#', file_path], stdout=subprocess.PIPE)
+        out += q.communicate()[0].splitlines()
+        q.stdout.close()
+        try:
+            q.terminate()
+        except:
+            pass
     except:
-        pass
+       return
+       pass
     # formats the list into a dictionary
     for x in out:
         if 'ExifTool Version' in x:
             continue
         y = x.split('\t')
         if y[2].strip():
-            meta[y[1].strip()] = y[2].strip().decode('utf8')
+            meta[y[1].strip()] = y[2].strip()
         else:
             meta[y[1].strip()] = ""
     return meta

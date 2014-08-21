@@ -61,22 +61,22 @@ def exifMeta(file_path):
     except:
         pass
 
-    #try:
-    p = subprocess.Popen([fp, '-t', '-G', '--filesize', unicode_handler(file_path)],
+    try:
+        p = subprocess.Popen([fp, '-t', '-G', '--filesize', unicode_handler(file_path)],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         stdin=subprocess.PIPE, startupinfo=startupinfo)
 
 
-    out = p.communicate()[0].splitlines()
+        out = p.communicate()[0].splitlines()
 
-    q = subprocess.Popen([fp, '-t', '-G', '-filesize#', unicode_handler(file_path)],
+        q = subprocess.Popen([fp, '-t', '-G', '-filesize#', unicode_handler(file_path)],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         stdin=subprocess.PIPE, startupinfo=startupinfo)
 
-    out += q.communicate()[0].splitlines()
-    #except:
-    #    return
-    #    pass
+        out += q.communicate()[0].splitlines()
+    except:
+       return
+       pass
 
     try:
         # formats the list into a dictionary

@@ -8,6 +8,7 @@
 *.sch
 *.bat
 *.vb
+test.py
 .dblocker.log.lock.swp
 .project
 .pyproject

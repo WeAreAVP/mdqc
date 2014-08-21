@@ -100,11 +100,12 @@ class MainWin(QMainWindow):
     def validate(self):
         global isExif
         isExif = self.exif.isChecked()
-        if str(self.fbox.text()) != '' or len(tags) != 0:
-            self.frule = TagRuleWin(self.fbox.text().decode("utf-8"))
+
+        if self.fbox.text() != '' or len(tags) != 0:
+            self.frule = TagRuleWin(self.fbox.text())
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
-                                "No reference file selected!")
+                                "invalid reference file selected!")
 
     # prompts user for filename/location of rules template to write out
     # rules templates use the following format:
@@ -224,7 +225,13 @@ class TagRuleWin(QWidget):
                 dict = qcdict.exifMeta(file)
             else:
                 dict = qcdict.mnfoMeta(file)
-            sdict = sorted(dict)
+
+            try:
+                sdict = sorted(dict)
+            except:
+                QMessageBox.warning(self, "Metadata Quality Control",
+                                "Invalid reference file selected!")
+                return
             n = 0
             for d in sdict:
                 self.addRow(d, 0, dict[d], n)
@@ -468,6 +475,8 @@ class Scanner(QWidget):
         fails = 0
         for rf in fls:
             l = qcdict.validate(rf, self.db, isExif)
+
+
             if not ": PASSED" in l[0].encode('utf8'):
                 fails += 1
             self.te.append(l[0].rstrip())

@@ -143,7 +143,7 @@ class MainWin(QMainWindow):
         global isExif
         isExif = self.exif.isChecked()
         if str(self.fbox.text()) != '' or len(tags) != 0:
-            self.frule = TagRuleWin(self.fbox.text().decode("utf-8"))
+            self.frule = TagRuleWin(self.fbox.text())
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "No reference file selected!")

@@ -91,7 +91,7 @@ class MainWin(QMainWindow):
         self.dd.clicked.connect(self.setd)
         self.scan.clicked.connect(self.scanner)
         try:
-            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:
             pass
         self.setCentralWidget(self.widget)
@@ -203,7 +203,7 @@ class TagRuleWin(QWidget):
         QWidget.__init__(self)
 
         try:
-            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'assets\\avpreserve-2.png')))
         except:
             pass
 
@@ -308,7 +308,7 @@ class DirRuleWin(QWidget):
         QWidget.__init__(self)
         self.field, self.op, self.val, self.add = [], [], [], []
         try:
-            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:
             pass
 
@@ -393,7 +393,7 @@ class Scanner(QWidget):
 
         self.db = self.makeList()
         try:
-            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\logo_sign_small.png')))
+            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:
             pass
 

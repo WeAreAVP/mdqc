@@ -6,7 +6,8 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
-from os import path, walk
+from os import path, walk, getcwd, sep
+
 import logging
 import datetime
 import qcdict
@@ -89,6 +90,17 @@ class MainWin(QMainWindow):
         self.scan.clicked.connect(self.scanner)
 
         self.setCentralWidget(self.widget)
+        
+        try:
+            self.setWindowIcon(QIcon(path.join(getcwd() + str(sep), 'assets'+str(sep)+'avpreserve-2.png')))
+        except:
+            try:
+                self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'assets' + (str(sep)) + 'avpreserve-2.png')))
+            except:
+                pass
+            pass
+
+        
 
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
     def checkForTool(self):

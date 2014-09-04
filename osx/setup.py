@@ -9,7 +9,7 @@ from setuptools import setup
 
 APP = ['MDQC.py']
 DATA_FILES = []
-OPTIONS = {'argv_emulation': False, 'iconfile':'logo_sign_trans.icns'}
+OPTIONS = {'argv_emulation': False, 'iconfile':'logo_sign_trans.icns','resources':'assets'}
 
 setup(
     app=APP,

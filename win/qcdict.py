@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # MDQC Core module (Windows)
 # Version 0.1, 2013-10-28
 # Copyright (c) 2013 AudioVisual Preservation Solutions
@@ -24,7 +25,25 @@ def template(tpl):
             rules.append((q[0].strip(), q[1].strip(), q[2].strip()))
     return rules
 
-def exifMeta(file):
+def unicode_handler(string):
+    try:
+        return string.encode('latin1')
+    except:
+        pass
+
+    try:
+        return string.decode('utf-8')
+    except:
+        pass
+
+    try:
+        return string.encode('utf-8')
+    except:
+        pass
+
+    return string
+
+def exifMeta(file_path):
     meta = defaultdict(list)
     fp = 'tools\\exiftool.exe'
 
@@ -37,26 +56,44 @@ def exifMeta(file):
     # exiftool is run twice: once for all but filesize,
     #				and one specifically for filesize
     # this is due to filesize requiring precise numerical output
-    p = subprocess.Popen([fp, '-t', '-G', '--filesize', file],
+    try:
+        file_path = file_path.decode('utf-8')
+    except:
+        pass
+
+    try:
+        p = subprocess.Popen([fp, '-t', '-G', '--filesize', unicode_handler(file_path)],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         stdin=subprocess.PIPE, startupinfo=startupinfo)
-    out = p.communicate()[0].splitlines()
 
-    q = subprocess.Popen([fp, '-t', '-G', '-filesize#', file],
+
+        out = p.communicate()[0].splitlines()
+
+        q = subprocess.Popen([fp, '-t', '-G', '-filesize#', unicode_handler(file_path)],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         stdin=subprocess.PIPE, startupinfo=startupinfo)
-    out += q.communicate()[0].splitlines()
 
-    # formats the list into a dictionary
-    for x in out:
-        if 'ExifTool Version' in x:
-            continue
-        y = x.split('\t')
-        if y[2].strip():
-            meta[y[1].strip()] = y[2].strip().decode('utf8')
-        else:
-            meta[y[1].strip()] = ""
-    return meta
+        out += q.communicate()[0].splitlines()
+    except:
+       return
+       pass
+
+    try:
+        # formats the list into a dictionary
+        for x in out:
+            if 'ExifTool Version' in x:
+                continue
+
+            y = x.split('\t')
+            if y[2].strip():
+                meta[y[1].strip()] = y[2].strip()
+            else:
+                meta[y[1].strip()] = ""
+        return meta
+    except:
+        return
+        pass
+
 
 
 # mnfoMeta (media file)
@@ -256,3 +293,5 @@ def destring(t):
     if len(l) == 0:
         l.append('bad string')
     return l
+#file = r'C:/Users/Furqan/Desktop/BFTesting/BFTesting/ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ¹º»¼½¾.shx'
+#print(exifMeta(file))

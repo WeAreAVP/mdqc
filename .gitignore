@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .project
 .pydevproject
 .settings
@@ -32,3 +33,40 @@ scheduler
 scheduler/*
 __pycache__
 __pycache__/*
+=======
+.project
+.pydevproject
+.settings
+*.pyc
+*.tsv
+*.conf
+*.xml
+*.sch
+*.bat
+*.vb
+test.py
+.dblocker.log.lock.swp
+.project
+.pyproject
+.DS_Store
+.pydevproject
+Fixity.db
+debug.log
+conf.xml
+.settings
+.settings/*
+.idea
+.idea/*
+history
+history/*
+reports
+reports/*
+bin
+bin/*
+debug
+debug/*
+scheduler
+scheduler/*
+__pycache__
+__pycache__/*
+>>>>>>> f15345c5b61295fff3c68177a7b8594dc843a286

@@ -185,7 +185,12 @@ class MainWin(QMainWindow):
     # begins test
     def scanner(self):
         if len(tags) != 0 and str(self.dbox.text()) != "":
-            self.v = Scanner(str(self.dbox.text()).rstrip())
+            if self.mnfo.isChecked():
+                toolUsed = 'mi'
+            else:
+                toolUsed = 'ef'
+                
+            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "Cannot test - rules/directory must be set")
@@ -387,10 +392,10 @@ class DirRuleWin(QWidget):
 
 # window to display test results
 class Scanner(QWidget):
-    def __init__(self, dir):
+    def __init__(self, dir, toolUsed='ef'):
         QWidget.__init__(self)
         self.d = dir.rstrip()
-
+        self.toolUsed = toolUsed
         self.db = self.makeList()
         try:
             self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
@@ -468,13 +473,22 @@ class Scanner(QWidget):
                 elif all(r[2].search(path.join(root, file)) for r in regexes):
                     fls.append(path.join(root, file))
 
+        if self.toolUsed == 'ef':
+            self.te.append("\nTool:: ExifTool \n")
+        else:
+            self.te.append("\nTool:: MediaInfo \n")
+
         self.te.append("Found " + str(len(fls)) + " matching files to validate")
+
         report.write("Files found\t\t" + str(len(fls)) + "\n")
         QCoreApplication.processEvents()
         out = ""
         fails = 0
         for rf in fls:
-            l = qcdict.validate(rf, self.db, isExif)
+            if self.toolUsed == 'ef':
+                l = qcdict.validate(rf, self.db, isExif)
+            else:
+                l = qcdict.validate(rf, self.db, False)
 
 
             if not ": PASSED" in l[0].encode('utf8'):

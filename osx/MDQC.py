@@ -23,7 +23,7 @@ import subprocess
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../../"
-isExif = True
+
 
 # Main window for MDQC, primarily for navigation between functions
 class MainWin(QMainWindow):
@@ -100,8 +100,6 @@ class MainWin(QMainWindow):
                 pass
             pass
 
-        
-
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
     def checkForTool(self):
         
@@ -165,11 +163,17 @@ class MainWin(QMainWindow):
     #
     # tagname	op int	value
     # [...]
-    # ===directory to scan
+    # ===   directory to scan
     # regex op value	value to match	regex
     def saveTemplate(self):
         dest = QFileDialog.getSaveFileName(dir=sys.executable[:sys.executable.rfind('/')] + "/../../../../",
                     filter='MDQC Template (*.tpl)')[0]
+
+        if self.mnfo.isChecked():
+            toolUsed = 'tool===mi'
+        else:
+            toolUsed = 'tool===ef'
+
         f = open(dest, 'w+')
         for n in xrange(len(tags)):
             t = tags[n].text()
@@ -183,6 +187,7 @@ class MainWin(QMainWindow):
             a = str(regexes[n][0]) + "\t" + regexes[n][1] + "\t" + \
                         regexes[n][2].pattern + "\n"
             f.write(a.encode("utf-8"))
+        f.write(toolUsed)
         f.close()
 
     # reads template data from specified file, populating MDQC's settings
@@ -197,13 +202,29 @@ class MainWin(QMainWindow):
         lines = f.readlines()
         f.close()
         for line in lines:
-            if line[:3] == "===":
+
+            if line.find('tool===') != -1:
+                toolUsed = line.replace('tool===', '')
+                if toolUsed == 'mi':
+                    self.mnfo.setChecked(1)
+                else:
+                    self.exif.setChecked(1)
+
+            elif len(line) > 2 and line[:3] == "===":
                 self.dbox.setText(line[3:].rstrip())
                 rgx = True
             elif not rgx:
                 data = line.split('\t')
-                tags.append(QLineEdit(data[0]))
-                vals.append(QLineEdit(data[2].decode("utf-8")))
+                try:
+                    tags.append(QLineEdit(data[0]))
+                except:
+                    pass
+
+                try:
+                    vals.append(QLineEdit(data[2].decode("utf-8")))
+                except:
+                    pass
+
                 o = QComboBox()
                 o.addItems(['[Ignore Tag]', 'Exists', 'Does Not Exist',
                             'Is', 'Is Not', 'Contains', 'Does Not Contain',
@@ -235,7 +256,11 @@ class MainWin(QMainWindow):
     # begins test
     def scanner(self):
         if len(tags) != 0 and str(self.dbox.text()) != "":
-            self.v = Scanner(str(self.dbox.text()).rstrip())
+            if self.mnfo.isChecked():
+                toolUsed = 'mi'
+            else:
+                toolUsed = 'ef'
+            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "Cannot test - rules/directory must be set")
@@ -416,10 +441,12 @@ class DirRuleWin(QWidget):
 		
 # window to display test results
 class Scanner(QWidget):
-    def __init__(self, dir):
+
+    def __init__(self, dir, toolUsed='ef'):
+
         QWidget.__init__(self)
         self.d = dir.rstrip()
-
+        self.toolUsed = toolUsed
         self.db = self.makeList()
 
         self.setWindowTitle('Metadata Quality Control')
@@ -454,6 +481,7 @@ class Scanner(QWidget):
                 replace('-', '').rpartition('.')[0] + ".tsv"
         report = open(rpath, 'w')
 
+
         report.write("METADATA QUALITY CONTROL REPORT\n" + \
                         str(datetime.datetime.now()).rpartition('.')[0] + \
                         "\n\nMETADATA RULES USED\n")
@@ -481,8 +509,6 @@ class Scanner(QWidget):
                 except:
                     pass
                 pass
-
-
 
             report.write("\n")
 
@@ -518,7 +544,13 @@ class Scanner(QWidget):
                 elif all(r[2].search(path.join(root, file)) for r in regexes):
                     fls.append(path.join(root, file))
 
+        if self.toolUsed == 'ef':
+            self.te.append("\nTool:: ExifTool \n")
+        else:
+            self.te.append("\nTool:: MediaInfo \n")
+
         self.te.append("Found " + str(len(fls)) + " matching files to validate")
+
         report.write("Files found\t\t" + str(len(fls)) + "\n")
         QCoreApplication.processEvents()
         out = ""
@@ -526,16 +558,24 @@ class Scanner(QWidget):
         logging.basicConfig(filename=reportdir+"mdqc.log", level=logging.INFO)
         # logging.basicConfig(filename="mdqc.log", level=logging.INFO)
 
-
         for rf in fls:
             logging.info("Validating " + rf)
+
             try:
-                l = qcdict.validate(rf, self.db, isExif)
+
+                if self.toolUsed == 'ef':
+                    l = qcdict.validate(rf, self.db, isExif)
+                else:
+                    l = qcdict.validate(rf, self.db, False)
+
+
             except Exception, e:
                 logging.exception(e)
                 continue
+
             if not ": PASSED" in l[0].decode('utf8'):
                 fails += 1
+
             logging.info("Appending to output..")
             self.te.append(l[0].rstrip())
             logging.info("Encoding to UTF8 and appending...")
@@ -543,7 +583,9 @@ class Scanner(QWidget):
             out += ul
             logging.info("Processing events...")
             QCoreApplication.processEvents()
-        report.write("Files failed\t\t" + str(fails) )
+
+        report.write("Files failed\t\t" + str(fails))
+
         try:
             report.write("\n\n" + out)
         except:

@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-a = Analysis(['Main.py'],
+a = Analysis(['MDQC.py'],
              pathex=['c:\\Users\\Xohotech\\Desktop\\projects\\MDQC'],
              hiddenimports=[],
              hookspath=None,

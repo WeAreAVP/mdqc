@@ -119,6 +119,13 @@ class MainWin(QMainWindow):
         spath = x[:x.rfind('\\')]
         dest = QFileDialog.getSaveFileName(dir=spath,
                     filter='MDQC Template (*.tpl)')[0]
+
+        if self.mnfo.isChecked():
+            toolUsed = 'tool===mi'
+        else:
+            toolUsed = 'tool===ef'
+
+
         f = open(dest, 'w+')
         for n in xrange(len(tags)):
             t = tags[n].text()
@@ -132,6 +139,8 @@ class MainWin(QMainWindow):
             a = str(regexes[n][0]) + "\t" + regexes[n][1] + "\t" + \
                         regexes[n][2].pattern + "\n"
             f.write(a.encode("utf-8"))
+
+        f.write(toolUsed)
         f.close()
 
     # reads template data from specified file, populating MDQC's settings
@@ -144,9 +153,17 @@ class MainWin(QMainWindow):
         rgx = False
         lines = f.readlines()
         for line in lines:
-            if line[:3] == "===":
+            if line.find('tool===') != -1:
+                toolUsed = line.replace('tool===', '')
+                if toolUsed == 'mi':
+                    self.mnfo.setChecked(1)
+                else:
+                    self.exif.setChecked(1)
+
+            elif len(line) > 2 and line[:3] == "===":
                 self.dbox.setText(line[3:].rstrip())
                 rgx = True
+
             elif not rgx:
                 data = line.split('\t')
                 tags.append(QLineEdit(data[0]))

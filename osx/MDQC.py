@@ -149,6 +149,7 @@ class MainWin(QMainWindow):
             return False
 
         return True
+
     def validate(self):
         global isExif
         isExif = self.exif.isChecked()
@@ -466,7 +467,6 @@ class Scanner(QWidget):
         xit.setEnabled(True)
 
     def closeScanner(self):
-        self.destroy()
         self.close()
 
     def makeList(self):
@@ -480,7 +480,7 @@ class Scanner(QWidget):
 
     def test(self):
 
-        rpath = reportdir + "report_" + \
+        rpath = reportdir +str(sep) + "report_" + \
         str(datetime.datetime.now()).replace(' ', '').replace(':', '').\
                 replace('-', '').rpartition('.')[0] + ".tsv"
         report = open(rpath, 'w')

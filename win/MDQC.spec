@@ -19,5 +19,5 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False , icon='assets\\avpreserve-1.ico')
+          console=True , icon='assets\\avpreserve-1.ico')
 app = BUNDLE(exe, name=os.path.join('dist', 'MDQC.exe.app'))

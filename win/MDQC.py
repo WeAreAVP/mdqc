@@ -423,7 +423,7 @@ class Scanner(QWidget):
         self.lay = QVBoxLayout(self)
         xit = QPushButton("Exit", self)
         xit.setEnabled(False)
-        xit.clicked.connect(qApp.quit)
+        xit.clicked.connect(self.closeScanner)
         self.te = QTextEdit(self)
         self.te.setReadOnly(True)
         self.lay.addWidget(self.te)
@@ -433,6 +433,11 @@ class Scanner(QWidget):
         self.show()
         self.test()
         xit.setEnabled(True)
+
+
+    def closeScanner(self):
+        self.close()
+
 
     def makeList(self):
         rules = []

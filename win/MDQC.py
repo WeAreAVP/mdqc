@@ -95,10 +95,9 @@ class MainWin(QMainWindow):
         self.dd.clicked.connect(self.setd)
         self.scan.clicked.connect(self.scanner)
 
-        try:
-            self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
-        except:
-            pass
+        print(self.configuration.getLogoSignSmall())
+        self.setWindowIcon(QIcon(self.configuration.getLogoSignSmall()))
+
         self.setCentralWidget(self.widget)
 
         self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)

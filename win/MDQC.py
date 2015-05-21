@@ -21,7 +21,7 @@ import re
 regexes, tags, ops, vals, adds = [], [], [], [], []
 reportdir = sys.executable[:sys.executable.rfind('\\')]
 isExif = True
-
+from GUI import AboutMDQCGUI
 global verified_files
 verified_files = {}
 
@@ -36,6 +36,9 @@ class MainWin(QMainWindow):
         load = QAction('&Load Template', self)
         rdir = QAction('&Report Directory', self)
         quit = QAction('&Quit', self)
+        self.about_mdqc_menu = QAction('&About MDQC', self)
+        self.about_mdqc_menu.setShortcut('CTRL+,')
+
         tool = menubar.addMenu('&Tools')
         self.exif = QAction('&ExifTool', self)
         self.mnfo = QAction('&MediaInfo', self)
@@ -46,6 +49,7 @@ class MainWin(QMainWindow):
         self.exif.setActionGroup(tgroup)
         self.mnfo.setActionGroup(tgroup)
 
+        file.addAction(self.about_mdqc_menu)
         file.addAction(save)
         file.addAction(load)
         file.addAction(rdir)
@@ -95,6 +99,8 @@ class MainWin(QMainWindow):
         except:
             pass
         self.setCentralWidget(self.widget)
+
+        self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)
 
     # invokes the window to set metadata rules
     def validate(self):
@@ -182,6 +188,12 @@ class MainWin(QMainWindow):
     def reportDir(self):
         global reportdir
         reportdir = QFileDialog.getExistingDirectory(dir=reportdir)
+
+    def aboutMDQC(self):
+        self.about_mdqc_gui.Cancel()
+        self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)
+        self.about_mdqc_gui.LaunchDialog()
+
 
     # invokes window to set directory rules
     def dirrules(self):

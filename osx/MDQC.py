@@ -7,7 +7,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from os import path, walk, getcwd, sep
-
+from GUI import AboutMDQCGUI
 import logging
 import datetime
 import qcdict
@@ -38,13 +38,15 @@ class MainWin(QMainWindow):
         tool = menubar.addMenu('&Tools')
         self.exif = QAction('&ExifTool', self)
         self.mnfo = QAction('&MediaInfo', self)
+        self.about_mdqc_menu = QAction('&About MDQC', self)
+        self.about_mdqc_menu.setShortcut('CTRL+,')
         tgroup = QActionGroup(self)
         self.exif.setCheckable(True)
         self.exif.setChecked(True)
         self.mnfo.setCheckable(True)
         self.exif.setActionGroup(tgroup)
         self.mnfo.setActionGroup(tgroup)
-
+        file.addAction(self.about_mdqc_menu)
         file.addAction(save)
         file.addAction(load)
         file.addAction(rdir)
@@ -55,6 +57,8 @@ class MainWin(QMainWindow):
         save.triggered.connect(self.saveTemplate)
         load.triggered.connect(self.loadTemplate)
         rdir.triggered.connect(self.reportDir)
+        self.about_mdqc_menu.triggered.connect(self.aboutMDQC)
+
         quit.triggered.connect(qApp.quit)
 
         self.fbox = QLineEdit(self)
@@ -90,7 +94,7 @@ class MainWin(QMainWindow):
         self.scan.clicked.connect(self.scanner)
 
         self.setCentralWidget(self.widget)
-        
+        self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)
         try:
             self.setWindowIcon(QIcon(path.join(getcwd() + str(sep), 'assets'+str(sep)+'avpreserve-2.png')))
         except:
@@ -240,6 +244,11 @@ class MainWin(QMainWindow):
     def reportDir(self):
         global reportdir
         reportdir = QFileDialog.getExistingDirectory(dir=reportdir)
+
+    def aboutMDQC(self):
+        self.about_mdqc_gui.Cancel()
+        self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)
+        self.about_mdqc_gui.LaunchDialog()
 
     # invokes window to set directory rules
     def dirrules(self):

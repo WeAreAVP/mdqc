@@ -21,7 +21,7 @@ class Configuration(object):
 
 
         self.application_name = 'Metadata Quality Control'
-        self.application_version = '0.1'
+        self.application_version = '0.3'
 
         self.user_home_path = os.path.expanduser('~')
 

@@ -7,7 +7,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from os import path, walk, getcwd, sep
-from GUI import AboutMDQCGUI
+from GUI import AboutMDQCGUI, Configuration
 import logging
 import datetime
 import qcdict
@@ -29,6 +29,7 @@ reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../../"
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
+        self.configuration = Configuration.Configuration()
         menubar = self.menuBar()
         file = menubar.addMenu('&File')
         save = QAction('&Save Template', self)
@@ -40,6 +41,7 @@ class MainWin(QMainWindow):
         self.mnfo = QAction('&MediaInfo', self)
         self.about_mdqc_menu = QAction('&About MDQC', self)
         self.about_mdqc_menu.setShortcut('CTRL+,')
+
         tgroup = QActionGroup(self)
         self.exif.setCheckable(True)
         self.exif.setChecked(True)
@@ -71,7 +73,7 @@ class MainWin(QMainWindow):
         self.rd.setFixedSize(QSize(30, 20))
         self.dd.setFixedSize(QSize(30, 20))
         self.widget = QWidget(self)
-        self.setWindowTitle("Metadata Quality Control")
+        # self.setWindowTitle("Metadata Quality Control")
         self.layout = QGridLayout(self.widget)
         self.layout.setContentsMargins(10, 10, 10, 10)
 
@@ -103,6 +105,9 @@ class MainWin(QMainWindow):
             except:
                 pass
             pass
+
+
+        self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
 
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
     def checkForTool(self):

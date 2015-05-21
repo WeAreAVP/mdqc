@@ -21,7 +21,7 @@ import re
 regexes, tags, ops, vals, adds = [], [], [], [], []
 reportdir = sys.executable[:sys.executable.rfind('\\')]
 isExif = True
-from GUI import AboutMDQCGUI
+from GUI import AboutMDQCGUI, Configuration
 global verified_files
 verified_files = {}
 
@@ -94,6 +94,7 @@ class MainWin(QMainWindow):
         self.rd.clicked.connect(self.setr)
         self.dd.clicked.connect(self.setd)
         self.scan.clicked.connect(self.scanner)
+        self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
         try:
             self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:

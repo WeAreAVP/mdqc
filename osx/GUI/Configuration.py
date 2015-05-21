@@ -20,7 +20,7 @@ class Configuration(object):
             self.OsType = 'check'
 
 
-        self.application_name = 'MDQC'
+        self.application_name = 'Metadata Quality Control'
         self.application_version = '0.1'
 
         self.user_home_path = os.path.expanduser('~')

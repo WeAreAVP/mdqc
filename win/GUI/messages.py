@@ -6,7 +6,7 @@ Created on May 14, 2014
 '''
 
 messages = {}
-version='0.1'
+version='0.3'
 
 ''' Project '''
 

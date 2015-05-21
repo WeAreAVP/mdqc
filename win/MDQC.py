@@ -29,7 +29,7 @@ verified_files = {}
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-
+        self.configuration = Configuration.Configuration()
         menubar = self.menuBar()
         file = menubar.addMenu('&File')
         save = QAction('&Save Template', self)
@@ -57,7 +57,7 @@ class MainWin(QMainWindow):
         tool.addAction(self.exif)
         tool.addAction(self.mnfo)
         tool.triggered.connect(self.clearer)
-
+        self.about_mdqc_menu.triggered.connect(self.aboutMDQC)
         save.triggered.connect(self.saveTemplate)
         load.triggered.connect(self.loadTemplate)
         rdir.triggered.connect(self.reportDir)
@@ -94,7 +94,7 @@ class MainWin(QMainWindow):
         self.rd.clicked.connect(self.setr)
         self.dd.clicked.connect(self.setd)
         self.scan.clicked.connect(self.scanner)
-        self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
+
         try:
             self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:
@@ -102,6 +102,7 @@ class MainWin(QMainWindow):
         self.setCentralWidget(self.widget)
 
         self.about_mdqc_gui = AboutMDQCGUI.AboutMDQCGUI(self)
+        self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
 
     # invokes the window to set metadata rules
     def validate(self):

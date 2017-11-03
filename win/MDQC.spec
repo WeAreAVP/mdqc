@@ -1,25 +1,33 @@
 # -*- mode: python -*-
+
+block_cipher = None
+
+
 a = Analysis(['MDQC.py'],
-             pathex=['c:\\Users\\Xohotech\\Desktop\\projects\\MDQC'],
+             pathex=['E:\\Projects\\mdqc\\win'],
+             binaries=[],
+             datas=[],
              hiddenimports=[],
-             hookspath=None,
-             runtime_hooks=None)
-
-for d in a.datas:
-    if 'pyconfig' in d[0]: 
-        a.datas.remove(d)
-        break
-
-a.datas += [('assets\\logo_sign_small.png', 'assets\\logo_sign_small.png', 'DATA')]
-pyz = PYZ(a.pure)
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          name='MDQC.exe',
+          exclude_binaries=True,
+          name='MDQC',
           debug=False,
-          strip=None,
+          strip=False,
           upx=True,
-          console=False , icon='assets\\icon.ico')
-pp = BUNDLE(exe, name=os.path.join('dist', 'MDQC.exe.app'))
+          console=True )
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               name='MDQC')

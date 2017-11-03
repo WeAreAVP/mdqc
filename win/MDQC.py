@@ -11,6 +11,7 @@ import datetime
 import qcdict
 import sys
 import re
+import csv
 
 # lists to hold data between classes
 # regexes: tuples of the form (int, value, regex object)
@@ -87,7 +88,20 @@ class MainWin(QMainWindow):
         self.layout.addWidget(self.dd, 1, 2)
         self.layout.addWidget(self.dbut, 1, 3)
 
-        self.layout.addWidget(self.scan, 2, 2, 1, 2)
+        #Start GUI for base file
+        self.csvSelectInput = QLineEdit(self)
+        self.layout.addWidget(QLabel("Base filenames:"), 2, 0);
+        self.layout.addWidget(self.csvSelectInput, 2, 1)
+        self.csvFileSelector = QPushButton("...")
+        self.csvFileSelector.setFixedSize(QSize(30, 20))
+        self.layout.addWidget(self.csvFileSelector, 2, 2)
+        self.layout.addWidget(QLabel("Load CSV file"), 2, 3);
+        self.csvFileSelector.clicked.connect(self.setCsvFile)
+        #End GUI for base filenames
+
+        self.layout.addWidget(self.scan, 3, 2, 1, 2)
+
+
 
         self.rbut.clicked.connect(self.validate)
         self.dbut.clicked.connect(self.dirrules)
@@ -212,15 +226,43 @@ class MainWin(QMainWindow):
         self.dbox.setText(QFileDialog.getExistingDirectory(
                             dir=path.expanduser('~') + "\\Desktop\\"))
 
+    # sets csv file from user option
+    def setCsvFile(self):
+        fileDialog = QFileDialog(self)
+        fileDialog.setNameFilters(["CSV File (*.csv)"])
+        self.csvSelectInput.setText(fileDialog.getOpenFileName(
+                            dir=path.expanduser('~') + "\\Desktop\\")[0])
+        self.clearer()
+
+
     # begins test
     def scanner(self):
+        print self.csvSelectInput.text()
+
         if len(tags) != 0 and str(self.dbox.text()) != "":
             if self.mnfo.isChecked():
                 toolUsed = 'mi'
             else:
                 toolUsed = 'ef'
-                
-            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed)
+
+            endsWith = ""
+            try:
+                for n in xrange(len(regexes)):
+                    if regexes[n][0]  == 6:
+                        endsWith = regexes[n][1]
+            except:
+                print "exc"
+
+            filesList = {}
+            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
+                reader = csv.reader(open(str(self.csvSelectInput.text()).rstrip(), 'r'))
+                k = 0
+                for row in reader:
+                    filesList[k] = row[0] + endsWith
+                    k = k + 1
+
+
+            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed, filesList)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "Cannot test - rules/directory must be set")
@@ -422,11 +464,12 @@ class DirRuleWin(QWidget):
 
 # window to display test results
 class Scanner(QWidget):
-    def __init__(self, dir, toolUsed='ef'):
+    def __init__(self, dir, toolUsed='ef', csvFile = ''):
         QWidget.__init__(self)
         self.d = dir.rstrip()
         self.toolUsed = toolUsed
         self.db = self.makeList()
+        self.csvFile = csvFile
         try:
             self.setWindowIcon(QIcon(path.join(sys._MEIPASS, 'images\\avpreserve-2.png')))
         except:
@@ -501,13 +544,22 @@ class Scanner(QWidget):
             report.write("Match all files\n")
         fls = []
         report.write("\nVALIDATION\n")
-        for root, subFolders, files in walk(self.d):
-            for file in files:
-                if len(regexes) == 0:
-                    fls.append(path.join(root, file))
-                elif all(r[2].search(path.join(root, file)) for r in regexes):
-                    fls.append(path.join(root, file))
+        if self.csvFile:
+            for f in self.csvFile:
+                print self.csvFile[f]
+                fls.append( path.join(self.d, self.csvFile[f]) )
+        else:
+            for root, subFolders, files in walk(self.d):
+                for file in files:
+                    if len(regexes) == 0:
+                        fls.append(path.join(root, file))
+                    elif all(r[2].search(path.join(root, file)) for r in regexes):
+                        fls.append(path.join(root, file))
 
+
+
+        print path
+        print fls
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")
         else:

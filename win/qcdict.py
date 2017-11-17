@@ -51,9 +51,8 @@ def exifMeta(file_path):
     except Exception:
         base_path = os.path.abspath(".")
 
-    print base_path
     fp = base_path + '\\tools\\exiftool.exe'
-    print fp
+
     # flags to suppress console generation
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -88,7 +87,7 @@ def exifMeta(file_path):
     try:
         # formats the list into a dictionary
         for x in out:
-            if 'ExifTool Version' in x:
+            if 'ExifTool Version' in x or 'File Name' in x:
                 continue
 
             y = x.split('\t')
@@ -132,7 +131,7 @@ def mnfoMeta(file):
     # formats the list into a dictionary
     prefix = ""
     for x in out:
-        if not ":" in x:
+        if not ":" in x or 'File Name' in x:
             continue
         y = x.split(' :')
         if y[0].strip() == 'ID':

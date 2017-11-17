@@ -27,4 +27,4 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=True , icon='assets\\avpreserve-3.ico')
+          console=False , icon='assets\\avpreserve-1.ico')

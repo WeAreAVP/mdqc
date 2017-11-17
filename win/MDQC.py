@@ -201,7 +201,7 @@ class MainWin(QMainWindow):
             elif rgx:
                 data = line.split('\t')
                 regexes.append((data[0],data[1],re.compile(data[2].rstrip())))
-
+        print regexes
     def reportDir(self):
         global reportdir
         reportdir = QFileDialog.getExistingDirectory(dir=reportdir)
@@ -574,12 +574,13 @@ class Scanner(QWidget):
         out = ""
         fails = 0
         for rf in fls:
+            print rf, self.db
             if self.toolUsed == 'ef':
                 l = qcdict.validate(rf, self.db, isExif)
             else:
                 l = qcdict.validate(rf, self.db, False)
 
-
+            print l
             if not ": PASSED" in l[0].encode('utf8'):
                 fails += 1
             self.te.append(l[0].rstrip())

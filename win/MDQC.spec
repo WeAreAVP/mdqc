@@ -23,7 +23,7 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=True )
+          console=True , icon='E:\\Projects\\fixity-java-app\\src\\avp\\fixity\\resources\\icon.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

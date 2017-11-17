@@ -121,7 +121,9 @@ class MainWin(QMainWindow):
     def validate(self):
         global isExif
         isExif = self.exif.isChecked()
-
+        print self.fbox.text()
+        print "\n"
+        print tags
         if self.fbox.text() != '' or len(tags) != 0:
             self.frule = TagRuleWin(self.fbox.text())
         else:
@@ -298,14 +300,19 @@ class TagRuleWin(QWidget):
 
         # if nothing was set, populate
         if tags == []:
+            print file
             if isExif:
                 dict = qcdict.exifMeta(file)
             else:
                 dict = qcdict.mnfoMeta(file)
 
             try:
+                print dict
+
+                print "\n-dict-"
                 sdict = sorted(dict)
-            except:
+            except Exception, e:
+                print e
                 QMessageBox.warning(self, "Metadata Quality Control",
                                 "Invalid reference file selected!")
                 return

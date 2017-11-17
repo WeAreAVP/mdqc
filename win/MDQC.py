@@ -300,19 +300,14 @@ class TagRuleWin(QWidget):
 
         # if nothing was set, populate
         if tags == []:
-            print file
             if isExif:
                 dict = qcdict.exifMeta(file)
             else:
                 dict = qcdict.mnfoMeta(file)
 
             try:
-                print dict
-
-                print "\n-dict-"
                 sdict = sorted(dict)
-            except Exception, e:
-                print e
+            except:
                 QMessageBox.warning(self, "Metadata Quality Control",
                                 "Invalid reference file selected!")
                 return

@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['MDQC.py'],
-             pathex=['E:\\Projects\\mdqc\\win'],
+             pathex=['tools', 'E:\\Projects\\mdqc\\win'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -18,16 +18,13 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          exclude_binaries=True,
+          a.binaries,
+          Tree('E:\\Projects\\mdqc\\win\\tools', prefix='tools\\'),
+          a.zipfiles,
+          a.datas,
           name='MDQC',
           debug=False,
           strip=False,
           upx=True,
-          console=True , icon='E:\\Projects\\fixity-java-app\\src\\avp\\fixity\\resources\\icon.ico')
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               name='MDQC')
+          runtime_tmpdir=None,
+          console=True , icon='assets\\avpreserve-3.ico')

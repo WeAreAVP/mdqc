@@ -8,6 +8,7 @@
 import subprocess
 from collections import defaultdict
 from os import path
+import os
 import time
 from re import compile, findall, UNICODE
 import sys
@@ -45,8 +46,14 @@ def unicode_handler(string):
 
 def exifMeta(file_path):
     meta = defaultdict(list)
-    fp = 'tools\\exiftool.exe'
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
 
+    print base_path
+    fp = base_path + '\\tools\\exiftool.exe'
+    print fp
     # flags to suppress console generation
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -101,7 +108,12 @@ def exifMeta(file_path):
 # returns: defaultdict of {tag: value} pairs
 def mnfoMeta(file):
     meta = defaultdict(list)
-    fp = 'tools\\MediaInfo.exe'
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    fp = base_path + '\\tools\\MediaInfo.exe'
 
     # flags to suppress console generation
     startupinfo = subprocess.STARTUPINFO()

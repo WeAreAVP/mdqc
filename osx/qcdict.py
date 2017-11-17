@@ -64,7 +64,7 @@ def exifMeta(file_path):
        pass
     # formats the list into a dictionary
     for x in out:
-        if 'ExifTool Version' in x:
+        if 'ExifTool Version' in x or 'File Name' in x:
             continue
         y = x.split('\t')
         if y[2].strip():
@@ -94,7 +94,7 @@ def mnfoMeta(file):
     # formats the list into a dictionary
     prefix = ""
     for x in out:
-        if not ":" in x:
+        if not ":" in x or 'File Name' in x:
             continue
         y = x.split(' :')
         if y[0].strip() == 'ID':

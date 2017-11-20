@@ -98,7 +98,7 @@ class MainWin(QMainWindow):
         self.csvFileSelector.clicked.connect(self.setCsvFile)
         #End GUI for base filenames
 
-        self.layout.addWidget(self.scan, 2, 2, 1, 2)
+        self.layout.addWidget(self.scan, 3, 2, 1, 2)
 
         self.rbut.clicked.connect(self.validate)
         self.dbut.clicked.connect(self.dirrules)

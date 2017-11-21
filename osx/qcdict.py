@@ -143,10 +143,10 @@ def verify(rule, dict):
         if rule[1] == 4 and value != comp:
             return 2
         # value contains reference value
-        if rule[1] == 5 and any(k in s for s in value for k in rule[2]):
+        if rule[1] == 5 and str(rule[2]).lower() in str(dict[rule[0]]).lower(): #any(k in s for s in value for k in rule[2]):
             return 2
         # value does not contain reference value
-        if rule[1] == 6 and not all(k in s for s in value for k in rule[2]):
+        if rule[1] == 6 and str(rule[2]).lower() not in str(dict[rule[0]]).lower(): #all(k in s for s in value for k in rule[2]):
             return 2
         # value is greater than
         if (rule[1] == 7 and

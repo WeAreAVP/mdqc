@@ -147,6 +147,7 @@ def mnfoMeta(file):
 # for example: ( (X Resolution, 3, 400), metadata dictionary)
 def verify(rule, dict):
 # unicode regex to split strings into lists
+    
     word = compile("[\w\d'-\.\,]+", UNICODE)
     try:
         value = findall(word, dict[rule[0]])
@@ -166,6 +167,7 @@ def verify(rule, dict):
     else:
         # split the unicode string into a list of words/numbers
         comp = findall(word, rule[2])
+    
     try:
         # value exists
         if rule[1] == 1:
@@ -180,10 +182,10 @@ def verify(rule, dict):
         if rule[1] == 4 and value != comp:
             return 2
         # value contains reference value
-        if rule[1] == 5 and any(k in s for s in value for k in rule[2]):
+        if rule[1] == 5 and str(rule[2]).lower() in str(dict[rule[0]]).lower(): #any(k in s for s in value for k in rule[2]):
             return 2
         # value does not contain reference value
-        if rule[1] == 6 and all(k in s for s in value for k in rule[2]):
+        if rule[1] == 6 and str(rule[2]).lower() not in str(dict[rule[0]]).lower(): #all(k in s for s in value for k in rule[2]):
             return 2
         # value is greater than
         if (rule[1] == 7 and

@@ -109,7 +109,6 @@ class MainWin(QMainWindow):
         self.dd.clicked.connect(self.setd)
         self.scan.clicked.connect(self.scanner)
 
-        print(self.configuration.getLogoSignSmall())
         self.setWindowIcon(QIcon(self.configuration.getLogoSignSmall()))
 
         self.setCentralWidget(self.widget)
@@ -121,9 +120,6 @@ class MainWin(QMainWindow):
     def validate(self):
         global isExif
         isExif = self.exif.isChecked()
-        print self.fbox.text()
-        print "\n"
-        print tags
         if self.fbox.text() != '' or len(tags) != 0:
             self.frule = TagRuleWin(self.fbox.text())
         else:
@@ -201,7 +197,7 @@ class MainWin(QMainWindow):
             elif rgx:
                 data = line.split('\t')
                 regexes.append((data[0],data[1],re.compile(data[2].rstrip())))
-        print regexes
+  
     def reportDir(self):
         global reportdir
         reportdir = QFileDialog.getExistingDirectory(dir=reportdir)
@@ -239,7 +235,6 @@ class MainWin(QMainWindow):
 
     # begins test
     def scanner(self):
-        print self.csvSelectInput.text()
 
         if len(tags) != 0 and str(self.dbox.text()) != "":
             if self.mnfo.isChecked():
@@ -548,7 +543,6 @@ class Scanner(QWidget):
         report.write("\nVALIDATION\n")
         if self.csvFile:
             for f in self.csvFile:
-                print self.csvFile[f]
                 fls.append( path.join(self.d, self.csvFile[f]) )
         else:
             for root, subFolders, files in walk(self.d):
@@ -560,8 +554,6 @@ class Scanner(QWidget):
 
 
 
-        print path
-        print fls
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")
         else:
@@ -574,7 +566,7 @@ class Scanner(QWidget):
         out = ""
         fails = 0
         for rf in fls:
-            print rf, self.db
+
             if self.toolUsed == 'ef':
                 l = qcdict.validate(rf, self.db, isExif)
             else:

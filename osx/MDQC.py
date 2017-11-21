@@ -6,6 +6,7 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
+import os
 from os import path, walk, getcwd, sep
 from GUI import AboutMDQCGUI, Configuration
 import logging
@@ -23,7 +24,6 @@ import subprocess
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../../"
-
 
 # Main window for MDQC, primarily for navigation between functions
 class MainWin(QMainWindow):
@@ -120,6 +120,8 @@ class MainWin(QMainWindow):
 
         self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
 
+
+
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
     def checkForTool(self):
         
@@ -167,6 +169,7 @@ class MainWin(QMainWindow):
                                  None,
                                  mediainfo_not_found_msg )
             return False
+
 
         return True
 
@@ -311,10 +314,8 @@ class MainWin(QMainWindow):
 
     # sets csv file from user option
     def setCsvFile(self):
-        fileDialog = QFileDialog(self)
-        fileDialog.setNameFilters(["CSV File (*.csv)"])
-        self.csvSelectInput.setText(fileDialog.getOpenFileName(
-                            dir=path.expanduser('~') + "\\Desktop\\")[0])
+        self.csvSelectInput.setText(QFileDialog.getOpenFileName(
+                            dir=path.expanduser('~') + "/Desktop/")[0])
         self.clearer()
 
     # Window providing metadata rules settings
@@ -500,6 +501,7 @@ class Scanner(QWidget):
         self.d = dir.rstrip()
         self.toolUsed = toolUsed
         self.db = self.makeList()
+        self.csvFile = csvFile
 
         self.setWindowTitle('Metadata Quality Control')
         self.lay = QVBoxLayout(self)
@@ -516,6 +518,8 @@ class Scanner(QWidget):
 
         self.test()
         xit.setEnabled(True)
+
+
 
     def closeScanner(self):
         self.close()

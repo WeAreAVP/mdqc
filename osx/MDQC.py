@@ -23,7 +23,7 @@ import subprocess
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
-reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../../"
+reportdir = os.getcwd() #sys.executable[:sys.executable.rfind('/')] + "/../../../"
 
 # Main window for MDQC, primarily for navigation between functions
 class MainWin(QMainWindow):

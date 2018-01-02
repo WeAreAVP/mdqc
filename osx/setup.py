@@ -14,6 +14,21 @@ OPTIONS = {'argv_emulation': False, 'iconfile':'logo_sign_trans.icns','resources
 setup(
     app=APP,
     data_files=DATA_FILES,
+    version='0.4',
+    name="MDQC",
+    description='MDQC stands for Metadata Quality Control, and it allows users to do just that in an effective and automated manner.',
+    long_description="MDQC is a free and open source application that allows users to create rules on embedded metadata, scan a set of files, and report on the conformance of each file against the user-defined rules. MDQC greatly minimizes the time needed to QC large batches of files.",
+    author="avpreserve.com",
+    author_email="furqan@avpreserve.com,nouman@avpreserve.com,zaheer@avpreserve.com",
+    url="https://www.avpreserve.com/products/mdqc/",
+    classifiers=[
+        # How mature is this project? Common values are
+        #   3 - Alpha
+        #   4 - Beta
+        #   5 - Production/Stable
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 2.7',
+    ],
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
 )

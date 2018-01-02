@@ -15,6 +15,7 @@ import qcdict
 import sys
 import re
 import subprocess
+import csv
 
 # lists to hold data between classes
 # regexes: tuples of the form (int, value, regex object)
@@ -24,7 +25,7 @@ import subprocess
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../.."
-
+isReportDir = ""
 
 
 
@@ -35,6 +36,22 @@ class MainWin(QMainWindow):
         QMainWindow.__init__(self)
         self.configuration = Configuration.Configuration()
         menubar = self.menuBar()
+
+        #check if output dir available
+        testLogpath = reportdir +str(sep) + "mdqc.log"
+        try:
+            open(path.abspath(testLogpath), 'w')
+        except:
+            global isReportDir
+            isReportDir = "reports" +str(sep)
+            global reportdir
+            reportdir = path.expanduser('~') +str(sep) + "Desktop"+str(sep) +"MDQC-0.4"+str(sep) ;
+            if not os.path.exists(reportdir):
+                os.makedirs(reportdir)
+            if not os.path.exists(reportdir + "reports"):
+                os.makedirs(reportdir + "reports")
+
+
         file = menubar.addMenu('&File')
         save = QAction('&Save Template', self)
         load = QAction('&Load Template', self)
@@ -194,7 +211,7 @@ class MainWin(QMainWindow):
     # ===   directory to scan
     # regex op value	value to match	regex
     def saveTemplate(self):
-        dest = QFileDialog.getSaveFileName(dir=sys.executable[:sys.executable.rfind('/')] + "/../../../../",
+        dest = QFileDialog.getSaveFileName(dir=reportdir,
                     filter='MDQC Template (*.tpl)')[0]
 
         if self.mnfo.isChecked():
@@ -224,7 +241,7 @@ class MainWin(QMainWindow):
         del ops[:]
         del vals[:]
         del regexes[:]
-        src = QFileDialog.getOpenFileName(dir=sys.executable[:sys.executable.rfind('/')] + "/../../../../", filter='MDQC Template (*.tpl)')[0]
+        src = QFileDialog.getOpenFileName(dir=reportdir, filter='MDQC Template (*.tpl)')[0]
         f = open(src, 'r')
         rgx = False
         lines = f.readlines()
@@ -304,6 +321,7 @@ class MainWin(QMainWindow):
 
             filesList = {}
             if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
+                print self.csvSelectInput.text()
                 reader = csv.reader(open(str(self.csvSelectInput.text()).rstrip(), 'r'))
                 k = 0
                 for row in reader:
@@ -540,20 +558,13 @@ class Scanner(QWidget):
     def test(self):
         file_name_of_report =  str(datetime.datetime.now()).replace(' ', '').replace(':', ''). \
                 replace('-', '').rpartition('.')[0] + ".tsv"
-        rpath = reportdir +str(sep) + "report_" + file_name_of_report
-        self.te.append("Report abspath: " +path.abspath(rpath))
-        self.te.append("Report relpath: " +rpath)
-        self.te.append("App path: " + sys.executable[:sys.executable.rfind('/')])
-        try:
-            report = open(path.abspath(rpath), 'w')
-        except:
-            self.te.append(path.abspath(rpath) + " is not writeable, recovering....")
-            try:
-                appPath = sys.executable[:sys.executable.rfind('/')]
-                report = open( string.replace( appPath, "Contents/MacOS/", "" ) + file_name_of_report)
+        rpath = reportdir +str(sep) + isReportDir + "report_" + file_name_of_report
 
-            except:
-                self.te.append( "FAILED TO WRITE THE OUTPUT" )
+        try:
+            report = open( rpath, "w")
+        except:
+            self.te.append("rpath: " + rpath)
+            self.te.append("Some error occured while opening the file. " + "\n")
 
 
         report.write("METADATA QUALITY CONTROL REPORT\n" + \
@@ -634,6 +645,7 @@ class Scanner(QWidget):
         QCoreApplication.processEvents()
         out = ""
         fails = 0
+        
         logging.basicConfig(filename=reportdir+"mdqc.log", level=logging.INFO)
         # logging.basicConfig(filename="mdqc.log", level=logging.INFO)
 

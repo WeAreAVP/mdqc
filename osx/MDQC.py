@@ -23,7 +23,11 @@ import subprocess
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
-reportdir = os.getcwd() #sys.executable[:sys.executable.rfind('/')] + "/../../../"
+reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../.."
+
+
+
+
 
 # Main window for MDQC, primarily for navigation between functions
 class MainWin(QMainWindow):
@@ -534,11 +538,22 @@ class Scanner(QWidget):
         return rules
 
     def test(self):
-
-        rpath = reportdir +str(sep) + "report_" + \
-        str(datetime.datetime.now()).replace(' ', '').replace(':', '').\
+        file_name_of_report =  str(datetime.datetime.now()).replace(' ', '').replace(':', ''). \
                 replace('-', '').rpartition('.')[0] + ".tsv"
-        report = open(rpath, 'w')
+        rpath = reportdir +str(sep) + "report_" + file_name_of_report
+        self.te.append("Report abspath: " +path.abspath(rpath))
+        self.te.append("Report relpath: " +rpath)
+        self.te.append("App path: " + sys.executable[:sys.executable.rfind('/')])
+        try:
+            report = open(path.abspath(rpath), 'w')
+        except:
+            self.te.append(path.abspath(rpath) + " is not writeable, recovering....")
+            try:
+                appPath = sys.executable[:sys.executable.rfind('/')]
+                report = open( string.replace( appPath, "Contents/MacOS/", "" ) + file_name_of_report)
+
+            except:
+                self.te.append( "FAILED TO WRITE THE OUTPUT" )
 
 
         report.write("METADATA QUALITY CONTROL REPORT\n" + \

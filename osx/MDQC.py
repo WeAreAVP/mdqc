@@ -645,7 +645,7 @@ class Scanner(QWidget):
         QCoreApplication.processEvents()
         out = ""
         fails = 0
-        
+
         logging.basicConfig(filename=reportdir+"mdqc.log", level=logging.INFO)
         # logging.basicConfig(filename="mdqc.log", level=logging.INFO)
 

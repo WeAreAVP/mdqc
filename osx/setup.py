@@ -28,7 +28,9 @@ setup(
         #   5 - Production/Stable
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 2.7',
+        'Operating System :: MacOS :: MacOS X'
     ],
+    platforms="Mac OS X, Windows",
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
 )

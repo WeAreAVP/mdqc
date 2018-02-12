@@ -72,7 +72,10 @@ class MainWin(QMainWindow):
         self.about_mdqc_menu = QAction('&About MDQC', self)
         self.about_mdqc_menu.setShortcut('CTRL+,')
 
-        tgroup = QActionGroup(self)
+        self.tgroup = QActionGroup(self)
+        self.exif.setActionGroup(self.tgroup)
+        self.mnfo.setActionGroup(self.tgroup)
+        self.tgroup.triggered.connect(self.onToolChange)
         self.exif.setCheckable(True)
         self.exif.setChecked(True)
         self.mnfo.setCheckable(True)
@@ -107,28 +110,37 @@ class MainWin(QMainWindow):
         self.layout = QGridLayout(self.widget)
         self.layout.setContentsMargins(10, 10, 10, 10)
 
-        self.layout.addWidget(QLabel("Reference File:"), 0, 0)
-        self.layout.addWidget(self.fbox, 0, 1)
-        self.layout.addWidget(self.rd, 0, 2)
-        self.layout.addWidget(self.rbut, 0, 3)
+        # visible incase of mediainfo
+        self.whichMediaFile = QLabel("File Type:")
+        self.layout.addWidget(self.whichMediaFile, 0, 0)
+        self.mediaFileType = QComboBox(self)
+        self.mediaFileType.addItem("Original File")
+        self.mediaFileType.addItem("MediaInfo File")
+        self.layout.addWidget(self.mediaFileType, 0, 1)
+        self.toggleMediaInfo(0)
 
-        self.layout.addWidget(QLabel("Directory to Scan:"), 1, 0)
-        self.layout.addWidget(self.dbox, 1, 1)
-        self.layout.addWidget(self.dd, 1, 2)
-        self.layout.addWidget(self.dbut, 1, 3)
+        self.layout.addWidget(QLabel("Reference File:"), 1, 0)
+        self.layout.addWidget(self.fbox, 1, 1)
+        self.layout.addWidget(self.rd, 1, 2)
+        self.layout.addWidget(self.rbut, 1, 3)
+
+        self.layout.addWidget(QLabel("Directory to Scan:"), 2, 0)
+        self.layout.addWidget(self.dbox, 2, 1)
+        self.layout.addWidget(self.dd, 2, 2)
+        self.layout.addWidget(self.dbut, 2, 3)
 
         #Start GUI for base file
         self.csvSelectInput = QLineEdit(self)
-        self.layout.addWidget(QLabel("Base filenames:"), 2, 0);
-        self.layout.addWidget(self.csvSelectInput, 2, 1)
+        self.layout.addWidget(QLabel("Base filenames:"), 3, 0);
+        self.layout.addWidget(self.csvSelectInput, 3, 1)
         self.csvFileSelector = QPushButton("...")
         self.csvFileSelector.setFixedSize(QSize(30, 20))
-        self.layout.addWidget(self.csvFileSelector, 2, 2)
-        self.layout.addWidget(QLabel("Load CSV file"), 2, 3);
+        self.layout.addWidget(self.csvFileSelector, 3, 2)
+        self.layout.addWidget(QLabel("Load CSV file"), 3, 3);
         self.csvFileSelector.clicked.connect(self.setCsvFile)
         #End GUI for base filenames
 
-        self.layout.addWidget(self.scan, 3, 2, 1, 2)
+        self.layout.addWidget(self.scan, 4, 2, 1, 2)
 
         self.rbut.clicked.connect(self.validate)
         self.dbut.clicked.connect(self.dirrules)
@@ -150,6 +162,20 @@ class MainWin(QMainWindow):
 
         self.setWindowTitle(self.configuration.getApplicationName() +' '+ self.configuration.getApplicationVersion())
 
+
+    def toggleMediaInfo(self, status):
+        if status == 1:
+            self.whichMediaFile.show()
+            self.mediaFileType.show()
+        else:
+            self.whichMediaFile.hide()
+            self.mediaFileType.hide()
+
+    def onToolChange(self):
+        if self.mnfo.isChecked():
+            self.toggleMediaInfo(1)
+        else:
+            self.toggleMediaInfo(0)
 
 
     # Checking for exif Tool and media Info tool if any single of these tool don't exists it will exit the Application
@@ -208,7 +234,10 @@ class MainWin(QMainWindow):
         global isExif
         isExif = self.exif.isChecked()
         if self.fbox.text() != '' or len(tags) != 0:
-            self.frule = TagRuleWin(self.fbox.text())
+            refMediaInfo = False
+            if "MediaInfo File" == self.mediaFileType.currentText():
+                refMediaInfo = True
+            self.frule = TagRuleWin(self.fbox.text(), refMediaInfo)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "No reference file selected!")
@@ -315,12 +344,14 @@ class MainWin(QMainWindow):
 
     # begins test
     def scanner(self):
+        useMediaInfoFile = False
+        if self.mnfo.isChecked():
+            toolUsed = 'mi'
+            if "MediaInfo File" == self.mediaFileType.currentText():
+                useMediaInfoFile  = True
+        else:
+            toolUsed = 'ef'
         if len(tags) != 0 and str(self.dbox.text()) != "":
-            if self.mnfo.isChecked():
-                toolUsed = 'mi'
-            else:
-                toolUsed = 'ef'
-
             endsWith = ""
             try:
                 for n in xrange(len(regexes)):
@@ -338,7 +369,7 @@ class MainWin(QMainWindow):
                     filesList[k] = row[0] + endsWith
                     k = k + 1
 
-            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed, filesList)
+            self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed, filesList, useMediaInfoFile)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "Cannot test - rules/directory must be set")
@@ -354,7 +385,7 @@ class MainWin(QMainWindow):
     # if no existing metadata is set, populate it from the reference file
     # otherwise, only provide metadata rules as set
 class TagRuleWin(QWidget):
-    def __init__(self, file):
+    def __init__(self, file, isMediaInfo):
         QWidget.__init__(self)
         self.scroll = QScrollArea()
         self.setWindowTitle("Rule Generation")
@@ -373,7 +404,11 @@ class TagRuleWin(QWidget):
             if isExif:
                 dict = qcdict.exifMeta(file)
             else:
-                dict = qcdict.mnfoMeta(file)
+                if isMediaInfo:
+                    dict = self.parseMediaInfo(file)
+                else:
+                    dict = qcdict.mnfoMeta(file)
+
             sdict = sorted(dict)
             n = 0
             for d in sdict:
@@ -397,6 +432,21 @@ class TagRuleWin(QWidget):
         self.scroll.setWidget(self.swidget)
         self.scroll.setWidgetResizable(True)
         self.show()
+
+        #Scan txt file for rules (metadata) instead of file
+    def parseMediaInfo(self, fileName):
+        import io
+        print "Scanning : " + fileName
+        f = io.open(fileName, mode="r", encoding="utf-8")
+        from collections import defaultdict
+        meta = defaultdict(list)
+        for line in f:
+            data = line.split(":", 1)
+            if len(data) == 2:
+                meta[data[0].strip()] = data[1].strip()
+        f.close()
+        print "Scannning compelete: "+fileName
+        return meta
 
     # two functions to copy a row under itself
     def dupeRow(self):
@@ -527,9 +577,10 @@ class DirRuleWin(QWidget):
 # window to display test results
 class Scanner(QWidget):
 
-    def __init__(self, dir, toolUsed='ef', csvFile = ''):
+    def __init__(self, dir, toolUsed='ef', csvFile = '', useMediaInfoFile = False):
 
         QWidget.__init__(self)
+        self.useMediaInfoFile = useMediaInfoFile
         self.d = dir.rstrip()
         self.toolUsed = toolUsed
         self.db = self.makeList()
@@ -548,7 +599,7 @@ class Scanner(QWidget):
         self.resize(800, 300)
         self.show()
 
-        self.test()
+        self.test(self.useMediaInfoFile)
         xit.setEnabled(True)
 
 
@@ -565,7 +616,7 @@ class Scanner(QWidget):
             rules.append((t, i, v))
         return rules
 
-    def test(self):
+    def test(self, useMediaInfoFile = False):
         file_name_of_report =  str(datetime.datetime.now()).replace(' ', '').replace(':', ''). \
                 replace('-', '').rpartition('.')[0] + ".tsv"
         rpath = reportdir +str(sep) + isReportDir + "report_" + file_name_of_report
@@ -670,7 +721,7 @@ class Scanner(QWidget):
                 if self.toolUsed == 'ef':
                     l = qcdict.validate(rf, self.db, isExif)
                 else:
-                    l = qcdict.validate(rf, self.db, False)
+                    l = qcdict.validate(rf, self.db, False, useMediaInfoFile)
 
 
             except Exception, e:

@@ -131,7 +131,6 @@ def mnfoMeta(file, useMediaInfoFile):
         print lineno(), out
     else:
         out = parseMediaInfoArray(file)
-        print lineno(), out
     
     # formats the list into a dictionary
     prefix = ""

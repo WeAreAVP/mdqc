@@ -151,10 +151,7 @@ class MainWin(QMainWindow):
             refMediaInfo = False
             if "MediaInfo File" == self.mediaFileType.currentText():
                 refMediaInfo = True
-                print 154, self.mediaFileType.currentText()
             self.frule = TagRuleWin(self.fbox.text(), refMediaInfo)
-            print "fRules below: " + self.fbox.text()
-            print self.frule
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
                                 "invalid reference file selected!")
@@ -516,8 +513,8 @@ class DirRuleWin(QWidget):
 # window to display test results
 class Scanner(QWidget):
     def __init__(self, dir, toolUsed='ef', csvFile = '', useMediaInfoFile = False):
-        self.useMediaInfoFile = useMediaInfoFile
         QWidget.__init__(self)
+        self.useMediaInfoFile = useMediaInfoFile
         self.d = dir.rstrip()
         self.toolUsed = toolUsed
         self.db = self.makeList()
@@ -620,7 +617,6 @@ class Scanner(QWidget):
         QCoreApplication.processEvents()
         out = ""
         fails = 0
-        print 623, " MDQC.py" , useMediaInfoFile
         for rf in fls:
 
             if self.toolUsed == 'ef':

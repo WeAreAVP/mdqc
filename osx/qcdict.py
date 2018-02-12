@@ -77,32 +77,39 @@ def exifMeta(file_path):
 # mnfoMeta (media file)
 # generates metadata for the supplied media file
 # returns: defaultdict of {tag: value} pairs
-def mnfoMeta(file):
+def mnfoMeta(file, useMediaInfoFile):
 
     meta = defaultdict(list)
-
     try:
         n = subprocess.Popen(['/usr/bin/mediainfo'])
         fp = '/usr/bin/mediainfo'
     except OSError:
         fp = '/usr/local/bin/mediainfo'
 
-    p = subprocess.Popen([fp, file],
-                        stdout=subprocess.PIPE)
-    out = p.communicate()[0].splitlines()
+    if useMediaInfoFile == False:
+
+        p = subprocess.Popen([fp, file],
+                            stdout=subprocess.PIPE)
+        out = p.communicate()[0].splitlines()
+    else
+        out = parseMediaInfoArray(file)
 
     # formats the list into a dictionary
     prefix = ""
     for x in out:
-        if not ":" in x or 'File Name' in x:
-            continue
-        y = x.split(' :')
-        if y[0].strip() == 'ID':
-            prefix = "Track #" + str(y[1].strip()) + " "
-        if y[1].strip():
-            meta[prefix + y[0].strip()] = y[1].strip().decode('utf8')
-        else:
-            meta[prefix + y[0].strip()] = ""
+        try:
+            if not ":" in x or 'File Name' in x:
+                continue
+            y = x.split(' :')
+            if y[0].strip() == 'ID':
+                prefix = "Track #" + str(y[1].strip()) + " "
+            if y[1].strip():
+                meta[prefix + y[0].strip()] = y[1].strip().decode('utf8')
+            else:
+                meta[prefix + y[0].strip()] = ""
+        except:
+            pass
+
     return meta
 
 # verify ( (tag, comparator, value), metadata dictionary )
@@ -173,12 +180,17 @@ def verify(rule, dict):
             # so we'll throw 'malformed operator'
             return 3
 
+def lineno():
+    import inspect
+    """Returns the current line number in our program."""
+    return inspect.currentframe().f_back.f_lineno
+
 # validate (media asset, list of rule tuples)
 # generates the metadata dictionary for the asset
 # and compares each rule tuple against it
 # in addition, it generates the output string for the asset, 
 # providing a natural-language description of what happened
-def validate(file, rules, type):
+def validate(file, rules, type, useMediaInfoFile = False):
     verified_files = {}
 
     result, report = "", ""
@@ -186,7 +198,7 @@ def validate(file, rules, type):
     if type:
         meta = exifMeta(file)
     else:
-        meta = mnfoMeta(file)
+        meta = mnfoMeta(file, useMediaInfoFile)
     for r in rules:
         if r[1] == 1:
             op = 'existent:'
@@ -267,3 +279,20 @@ def destring(t):
     if len(l) == 0:
         l.append('bad string')
     return l
+
+def parseMediaInfoArray( fileName ):
+    import io
+    print "Scanning : " + fileName
+    try:
+        f = io.open(fileName, mode="r", encoding="utf-8")
+        from collections import defaultdict
+        meta = [] #defaultdict(list)
+        for line in f:
+            if line.strip() != "":
+                meta.append(line.strip())
+
+        f.close()
+        print "Scannning compelete: "+fileName
+        return meta
+    except:
+        return []

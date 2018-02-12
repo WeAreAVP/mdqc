@@ -24,9 +24,10 @@ import csv
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
+global reportdir
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../.."
 isReportDir = ""
-
+print reportdir
 
 
 
@@ -41,15 +42,23 @@ class MainWin(QMainWindow):
         testLogpath = reportdir +str(sep) + "mdqc.log"
         try:
             open(path.abspath(testLogpath), 'w')
-        except:
+
+            print "Dirs created at passed -> " + testLogpath
+        except Exception as e:
+            print(e)
+            print "Dirs created at failed -> " + testLogpath
             global isReportDir
             isReportDir = "reports" +str(sep)
             global reportdir
             reportdir = path.expanduser('~') +str(sep) + "Desktop"+str(sep) +"MDQC-0.4"+str(sep) ;
+
+
             if not os.path.exists(reportdir):
                 os.makedirs(reportdir)
             if not os.path.exists(reportdir + "reports"):
                 os.makedirs(reportdir + "reports")
+
+            print "Dirs created at -> " + reportdir
 
 
         file = menubar.addMenu('&File')
@@ -156,6 +165,7 @@ class MainWin(QMainWindow):
                 subprocess.Popen(['/usr/local/bin/exiftool'])
             except OSError:
                 exif_tool_found = False
+                print "exif_tool_found = false"
                 pass
 
 
@@ -562,7 +572,9 @@ class Scanner(QWidget):
 
         try:
             report = open( rpath, "w")
-        except:
+        except Exception as e:
+            print(e)
+            print "errors creating file: " + rpath
             self.te.append("rpath: " + rpath)
             self.te.append("Some error occured while opening the file. " + "\n")
 
@@ -576,7 +588,8 @@ class Scanner(QWidget):
 
             try:
                 report.write(q)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     report.write(q.decode("utf-8"))
                 except:

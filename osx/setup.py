@@ -18,9 +18,9 @@ setup(
     name="MDQC",
     description='MDQC stands for Metadata Quality Control, and it allows users to do just that in an effective and automated manner.',
     long_description="MDQC is a free and open source application that allows users to create rules on embedded metadata, scan a set of files, and report on the conformance of each file against the user-defined rules. MDQC greatly minimizes the time needed to QC large batches of files.",
-    author="avpreserve.com",
-    author_email="furqan@avpreserve.com,nouman@avpreserve.com,zaheer@avpreserve.com",
-    url="https://www.avpreserve.com/products/mdqc/",
+    author="weareavp.com",
+    author_email="furqan@avpreserve.com,nouman@weareavp.com,zaheer@weareavp.com",
+    url="https://www.weareavp.com/products/mdqc/",
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha

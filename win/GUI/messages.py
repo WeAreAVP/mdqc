@@ -4,22 +4,23 @@ Created on May 14, 2014
  
 @author: Furqan Wasi <furqan@avpreserve.com>
 '''
-
+import datetime;
 messages = {}
-version='0.3'
+version='0.4'
+year=now = datetime.datetime.now().year
 
 ''' Project '''
 
-''' About Fixity''' 
+''' About MDQC'''
 ''' Description ''' 
 messages['description_heading'] = '<h1>DESCRIPTION</h1>'
-messages['description_Content'] = '<p>AVPreserve MDQC ' + str(version) + '</p> <p>MDQC was developed by AVPreserve and can be found at www.avpreserve.com/tools</p></br> <p>The GitHub repository for MDQC can be found at https://github.com/avpreserve/mdqc</p> <p>MDQC stands for Metadata Quality Control. It is a free open source utility that reads the embedded metadata of a file or directory and compares it against a set of rules defined by the user. AVPreserve created MDQC after doing a great deal of wrangling data using a combination of scripts, ExifTool, MediaInfo, spreadsheets and formulas. The most common use to date has been to automate and minimize the time needed to QC large batches of digitized or reformatted assets. For instance, organizations have used MDQC on files being returned from a vendor or in-house lab to verify technical parameters, such as bit depth, sample rate, codec and aspect ratio, as well as non-technical parameters such as copyright statements, title information, identifiers and more. Although this has been the primary use so far MDQC can be used in any workflow where comparing actual metadata to expected metadata is useful. MDQC can be used on any file type supported by ExifTool and MediaInfo.</p>'
+messages['description_Content'] = '<p>WeAreAVP MDQC ' + str(version) + '</p> <p>MDQC was developed by WeAreAVP and can be found at www.weareavp.com/tools</p></br> <p>The GitHub repository for MDQC can be found at https://github.com/WeAreAVP/mdqc</p> <p>MDQC stands for Metadata Quality Control. It is a free open source utility that reads the embedded metadata of a file or directory and compares it against a set of rules defined by the user. WeAreAVP created MDQC after doing a great deal of wrangling data using a combination of scripts, ExifTool, MediaInfo, spreadsheets and formulas. The most common use to date has been to automate and minimize the time needed to QC large batches of digitized or reformatted assets. For instance, organizations have used MDQC on files being returned from a vendor or in-house lab to verify technical parameters, such as bit depth, sample rate, codec and aspect ratio, as well as non-technical parameters such as copyright statements, title information, identifiers and more. Although this has been the primary use so far MDQC can be used in any workflow where comparing actual metadata to expected metadata is useful. MDQC can be used on any file type supported by ExifTool and MediaInfo.</p>'
 
 ''' License ''' 
 messages['License_heading'] = '<h1>Author and License </h1>'
 messages['License_Content'] = '''
 <h1>Author and License </h1><p>MDQC Copyright and License </p>
-        <p>Copyright (C) 2013-2015 www.avpreserve.com, info@avpreserve.com </p></br>
+        <p>Copyright (C) 2013-'''+ str(year) +''' www.weareavp.com, info@weareavp.com </p></br>
         <p>MDQC stands for Metadata Quality Control. It is a free open source utility that reads the embedded metadata of a file or directory and compares it against a set of rules defined by the user. AVPreserve created MDQC after doing a great deal of wrangling data using a combination of scripts, ExifTool, MediaInfo, spreadsheets and formulas. The most common use to date has been to automate and minimize the time needed to QC large batches of digitized or reformatted assets. For instance, organizations have used MDQC on files being returned from a vendor or in-house lab to verify technical parameters, such as bit depth, sample rate, codec and aspect ratio, as well as non-technical parameters such as copyright statements, title information, identifiers and more. Although this has been the primary use so far MDQC can be used in any workflow where comparing actual metadata to expected metadata is useful. MDQC can be used on any file type supported by ExifTool and MediaInfo.
 </p>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -248,6 +249,6 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 ''' Contact Us ''' 
 messages['Contact_heading'] = '<h1>Contact</h1>'
-messages['Contact_Content'] = '<p>Please post issues and feature requests at https://github.com/avpreserve/mdqc/issues</p> <p>Please send questions, comments or feedback to info@avpreserve.com</p></br>'
+messages['Contact_Content'] = '<p>Please post issues and feature requests at https://github.com/WeAreAVP/mdqc/issues</p> <p>Please send questions, comments or feedback to info@weareavp.com</p></br>'
 
 

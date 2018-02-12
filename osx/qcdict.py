@@ -91,7 +91,7 @@ def mnfoMeta(file, useMediaInfoFile):
         p = subprocess.Popen([fp, file],
                             stdout=subprocess.PIPE)
         out = p.communicate()[0].splitlines()
-    else
+    else:
         out = parseMediaInfoArray(file)
 
     # formats the list into a dictionary

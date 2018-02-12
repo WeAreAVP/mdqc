@@ -79,8 +79,6 @@ class MainWin(QMainWindow):
         self.exif.setCheckable(True)
         self.exif.setChecked(True)
         self.mnfo.setCheckable(True)
-        self.exif.setActionGroup(tgroup)
-        self.mnfo.setActionGroup(tgroup)
         file.addAction(self.about_mdqc_menu)
         file.addAction(save)
         file.addAction(load)

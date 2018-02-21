@@ -23,8 +23,9 @@ import csv
 # ops: QComboBoxes indicating comparators
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
-regexes, tags, ops, vals, adds = [], [], [], [], []
 global reportdir
+regexes, tags, ops, vals, adds = [], [], [], [], []
+
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../.."
 isReportDir = ""
 print reportdir
@@ -184,13 +185,21 @@ class MainWin(QMainWindow):
         mediainfo_not_found_msg = "MediaInfo not found. Please download the CLI version from the following url and install: <a href='http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS'>http://mediaarea.net/en-us/MediaInfo/Download/Mac_OS</a>"
         try:
             subprocess.Popen(['/usr/bin/exiftool'])
+            exifVersion = subprocess.check_output(['/usr/bin/exiftool', '-ver'])
+            print exifVersion
         except OSError:
             try:
                 subprocess.Popen(['/usr/local/bin/exiftool'])
-            except OSError:
+                exifVersion = subprocess.check_output(['/usr/local/bin/exiftool','-ver'])
+                print ">> + >> "
+                print exifVersion
+                print "<< + <<"
+            except OSError as e:
+                print e
                 exif_tool_found = False
                 print "exif_tool_found = false"
                 pass
+
 
 
         media_info_found = True
@@ -210,6 +219,11 @@ class MainWin(QMainWindow):
                                 str(exif_not_found_msg) + ' <br/> <br/>' + str(mediainfo_not_found_msg) )
             return False
 
+        if exifVersion.strip() < 10.70:
+            QMessageBox.critical(self,
+                                 None,
+                                 str("MDQC supports ExifTool version >= 10.70")  )
+            return False
 
         elif exif_tool_found is False:
             QMessageBox.critical(self,
@@ -316,6 +330,7 @@ class MainWin(QMainWindow):
                 ops.append(o)
             elif rgx:
                 data = line.split('\t')
+                print "data: " + line
                 regexes.append((data[0],data[1],re.compile(data[2].rstrip())))
 
     def reportDir(self):
@@ -352,21 +367,29 @@ class MainWin(QMainWindow):
         if len(tags) != 0 and str(self.dbox.text()) != "":
             endsWith = ""
             try:
+                print regexes
                 for n in xrange(len(regexes)):
+                    print regexes[n]
                     if regexes[n][0]  == 6:
                         endsWith = regexes[n][1]
             except:
                 print "exc"
 
+            print self.csvSelectInput.text()
+            print endsWith
             filesList = {}
+            k = 0
+            if endsWith == "":
+                print "Empty EndsWith: " + endsWith
             if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
-                print self.csvSelectInput.text()
-                reader = csv.reader(open(str(self.csvSelectInput.text()).rstrip(), 'r'))
-                k = 0
-                for row in reader:
-                    filesList[k] = row[0] + endsWith
-                    k = k + 1
+                with open(str(self.csvSelectInput.text()), 'r') as f:
+                    print f
+                    for row in csv.reader(f.read().splitlines()):
+                        filesList[k] = row[0] + endsWith
+                        k = k + 1
 
+            else:
+                print "CSV file failed to parse."
             self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed, filesList, useMediaInfoFile)
         else:
             QMessageBox.warning(self, "Metadata Quality Control",
@@ -377,7 +400,7 @@ class MainWin(QMainWindow):
     def setCsvFile(self):
         self.csvSelectInput.setText(QFileDialog.getOpenFileName(
                             dir=path.expanduser('~') + "/Desktop/")[0])
-        self.clearer()
+        # self.clearer()
 
     # Window providing metadata rules settings
     # if no existing metadata is set, populate it from the reference file
@@ -405,7 +428,7 @@ class TagRuleWin(QWidget):
                 if isMediaInfo:
                     dict = self.parseMediaInfo(file)
                 else:
-                    dict = qcdict.mnfoMeta(file)
+                    dict = qcdict.mnfoMeta(file, False)
 
             sdict = sorted(dict)
             n = 0

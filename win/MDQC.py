@@ -20,6 +20,7 @@ import csv
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
 regexes, tags, ops, vals, adds = [], [], [], [], []
+global reportdir
 reportdir = sys.executable[:sys.executable.rfind('\\')]
 isExif = True
 from GUI import AboutMDQCGUI, Configuration
@@ -373,7 +374,7 @@ class TagRuleWin(QWidget):
         meta = defaultdict(list)
         for line in f:
             data = line.split(":", 1)
-            if len(data) == 2:
+            if len(data) == 2 and not meta[data[0].strip()]:
                 meta[data[0].strip()] = data[1].strip()
         print(meta)
         f.close()

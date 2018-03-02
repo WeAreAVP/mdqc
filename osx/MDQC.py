@@ -463,7 +463,7 @@ class TagRuleWin(QWidget):
         meta = defaultdict(list)
         for line in f:
             data = line.split(":", 1)
-            if len(data) == 2:
+            if len(data) == 2 and not meta[data[0].strip()]:
                 meta[data[0].strip()] = data[1].strip()
         f.close()
         print "Scannning compelete: "+fileName

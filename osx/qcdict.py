@@ -288,7 +288,7 @@ def parseMediaInfoArray( fileName ):
         from collections import defaultdict
         meta = [] #defaultdict(list)
         for line in f:
-            if line.strip() != "":
+            if line.strip() != "" and not meta[line.strip()]:
                 meta.append(line.strip())
 
         f.close()

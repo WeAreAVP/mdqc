@@ -131,6 +131,7 @@ def mnfoMeta(file, useMediaInfoFile):
         print lineno(), out
     else:
         out = parseMediaInfoArray(file)
+        print lineno(), out
     
     # formats the list into a dictionary
     prefix = ""
@@ -145,7 +146,8 @@ def mnfoMeta(file, useMediaInfoFile):
                 meta[prefix + y[0].strip()] = y[1].strip().decode('utf8')
             else:
                 meta[prefix + y[0].strip()] = ""
-        except:
+        except Exception as e:
+            print lineno(), e
             pass
     return meta
 
@@ -154,7 +156,6 @@ def mnfoMeta(file, useMediaInfoFile):
 # for example: ( (X Resolution, 3, 400), metadata dictionary)
 def verify(rule, dict):
 # unicode regex to split strings into lists
-    
     word = compile("[\w\d'-\.\,]+", UNICODE)
     try:
         value = findall(word, dict[rule[0]])
@@ -237,7 +238,6 @@ def validate(file, rules, type, useMediaInfoFile = False):
     if type:
         meta = exifMeta(file)
     else:
-        print lineno(), useMediaInfoFile
         meta = mnfoMeta(file, useMediaInfoFile)
     for r in rules:
         if r[1] == 1:
@@ -322,20 +322,21 @@ def destring(t):
 
 def parseMediaInfoArray( fileName ):
     import io
-    print "Scanning : " + fileName
     try:
         f = io.open(fileName, mode="r", encoding="utf-8")
         from collections import defaultdict
         meta = [] #defaultdict(list)
+        meta_check = defaultdict(list)
         for line in f:
-            if line.strip() != "" and not meta[line.strip()]:
+            data = line.strip().split(":", 1)
+            if not meta_check[data[0].strip()]:
+                meta_check[data[0].strip()] = 1
                 meta.append(line.strip())
-        print(meta)
 
         f.close()
-        print "Scannning compelete: "+fileName
         return meta
-    except:
+    except Exception as e:
+        print lineno(), e.message
         return []
 #file = r'C:/Users/Furqan/Desktop/BFTesting/BFTesting/ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ¹º»¼½¾.shx'
 #print(exifMeta(file))

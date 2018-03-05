@@ -333,7 +333,7 @@ class TagRuleWin(QWidget):
                 if isMediaInfo:
                     dict = self.parseMediaInfo(file)
                 else:
-                    dict = qcdict.mnfoMeta(file)
+                    dict = qcdict.mnfoMeta(file, False)
 
             print dict
             try:

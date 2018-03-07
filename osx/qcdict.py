@@ -92,7 +92,9 @@ def mnfoMeta(file, useMediaInfoFile):
                             stdout=subprocess.PIPE)
         out = p.communicate()[0].splitlines()
     else:
-        out = parseMediaInfoArray(file)
+        import io
+        f = io.open(file, mode="r", encoding="utf-8").read()
+        out = f.splitlines()
 
     # formats the list into a dictionary
     prefix = ""
@@ -281,21 +283,3 @@ def destring(t):
         l.append('bad string')
     return l
 
-def parseMediaInfoArray( fileName ):
-    import io
-    try:
-        f = io.open(fileName, mode="r", encoding="utf-8")
-        from collections import defaultdict
-        meta = [] #defaultdict(list)
-        meta_check = defaultdict(list)
-        for line in f:
-            data = line.strip().split(":", 1)
-            if not meta_check[data[0].strip()]:
-                meta_check[data[0].strip()] = 1
-                meta.append(line.strip())
-
-        f.close()
-        return meta
-    except Exception as e:
-        print lineno(), e.message
-        return []

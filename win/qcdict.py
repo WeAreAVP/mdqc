@@ -130,9 +130,12 @@ def mnfoMeta(file, useMediaInfoFile):
         out = p.communicate()[0].splitlines()
         print lineno(), out
     else:
-        import io
-        f = io.open(file, mode="r", encoding="utf-8").read()
-        out = f.splitlines()
+        try:
+            import io
+            f = io.open(file, mode="r", encoding="utf-8").read()
+            out = f.splitlines()
+        except:
+            out = []
         print lineno(), out
     
     # formats the list into a dictionary

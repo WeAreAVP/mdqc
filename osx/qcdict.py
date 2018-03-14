@@ -204,6 +204,8 @@ def validate(file, rules, type, useMediaInfoFile = False):
     if type:
         meta = exifMeta(file)
     else:
+        if  file[-4:] != ".txt":
+            useMediaInfoFile = False
         meta = mnfoMeta(file, useMediaInfoFile)
     for r in rules:
         if r[1] == 1:

@@ -638,9 +638,20 @@ class Scanner(QWidget):
         return rules
 
     def test(self, useMediaInfoFile = False):
+        documentPath = os.path.expanduser('~/Documents/') +'MDQC Reports'+str(sep)
+
+        if not os.path.exists(documentPath):
+            try:
+                os.makedirs(documentPath)
+            except Exception as e:
+                print(e)
+                print "errors creating Directory: " + documentPath
+                self.te.append("documentPath: " + documentPath)
+                self.te.append("Some error occured while opening the file. " + "\n")
+
         file_name_of_report =  str(datetime.datetime.now()).replace(' ', '').replace(':', ''). \
                 replace('-', '').rpartition('.')[0] + ".tsv"
-        rpath = reportdir +str(sep) + isReportDir + "report_" + file_name_of_report
+        rpath = documentPath  + "report_" + file_name_of_report
 
         try:
             report = open( rpath, "w")

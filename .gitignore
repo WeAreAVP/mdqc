@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .project
 .pydevproject
 .settings
@@ -69,4 +68,5 @@ scheduler
 scheduler/*
 __pycache__
 __pycache__/*
->>>>>>> f15345c5b61295fff3c68177a7b8594dc843a286
+venv
+venv/*

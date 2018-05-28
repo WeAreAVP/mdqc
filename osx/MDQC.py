@@ -379,13 +379,14 @@ class MainWin(QMainWindow):
             print endsWith
             filesList = {}
             k = 0
+            # and endsWith != ""
             if endsWith == "":
                 print "Empty EndsWith: " + endsWith
-            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
+            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" :
                 with open(str(self.csvSelectInput.text()), 'r') as f:
                     print f
                     for row in csv.reader(f.read().splitlines()):
-                        filesList[k] = row[0] + endsWith
+                        filesList[k] = row[0]
                         k = k + 1
 
             else:
@@ -638,9 +639,20 @@ class Scanner(QWidget):
         return rules
 
     def test(self, useMediaInfoFile = False):
+        documentPath = os.path.expanduser('~/Documents/') +'MDQC Reports'+str(sep)
+
+        if not os.path.exists(documentPath):
+            try:
+                os.makedirs(documentPath)
+            except Exception as e:
+                print(e)
+                print "errors creating Directory: " + documentPath
+                self.te.append("documentPath: " + documentPath)
+                self.te.append("Some error occured while opening the file. " + "\n")
+
         file_name_of_report =  str(datetime.datetime.now()).replace(' ', '').replace(':', ''). \
                 replace('-', '').rpartition('.')[0] + ".tsv"
-        rpath = reportdir +str(sep) + isReportDir + "report_" + file_name_of_report
+        rpath = documentPath  + "report_" + file_name_of_report
 
         try:
             report = open( rpath, "w")
@@ -707,17 +719,32 @@ class Scanner(QWidget):
             report.write("Match all files\n")
         fls = []
         report.write("\nVALIDATION\n")
-        if self.csvFile:
-            for f in self.csvFile:
-                print self.csvFile[f]
-                fls.append( path.join(self.d, self.csvFile[f]) )
-        else:
-            for root, subFolders, files in walk(self.d):
-                for file in files:
-                    if len(regexes) == 0:
-                        fls.append(path.join(root, file))
-                    elif all(r[2].search(path.join(root, file)) for r in regexes):
-                        fls.append(path.join(root, file))
+        # if self.csvFile:
+        #     for f in self.csvFile:
+        #         print self.csvFile[f]
+        #         fls.append( path.join(self.d, self.csvFile[f]) )
+        # else:
+        r = {}
+        for root, subFolders, files in walk(self.d):
+            for file in files:
+                if len(regexes) == 0:
+                    fls.append(path.join(root, file))
+                else:
+                    add_file = 0
+                    for r in regexes:
+                        if r[2].search(path.join(root, file)):
+                            add_file = 1
+                        else:
+                            add_file = 0
+                            break
+
+                    if add_file == 1:
+                        if self.csvFile:
+                            for f in self.csvFile:
+                                if self.csvFile[f] in path.join(root, file):
+                                    fls.append(path.join(root, file))
+                        else:
+                            fls.append(path.join(root, file))
 
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")

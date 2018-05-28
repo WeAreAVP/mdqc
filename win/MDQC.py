@@ -283,11 +283,12 @@ class MainWin(QMainWindow):
                 print "exc"
 
             filesList = {}
-            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
+            # and endsWith != ""
+            if self.csvSelectInput.text() and self.csvSelectInput.text() != "":
                 reader = csv.reader(open(str(self.csvSelectInput.text()).rstrip(), 'r'))
                 k = 0
                 for row in reader:
-                    filesList[k] = row[0] + endsWith
+                    filesList[k] = row[0]
                     k = k + 1
 
 
@@ -594,18 +595,31 @@ class Scanner(QWidget):
             report.write("Match all files\n")
         fls = []
         report.write("\nVALIDATION\n")
-        if self.csvFile:
-            for f in self.csvFile:
-                fls.append( path.join(self.d, self.csvFile[f]) )
-        else:
-            for root, subFolders, files in walk(self.d):
-                for file in files:
-                    if len(regexes) == 0:
-                        fls.append(path.join(root, file))
-                    elif all(r[2].search(path.join(root, file)) for r in regexes):
-                        fls.append(path.join(root, file))
+        # if self.csvFile:
+        #     for f in self.csvFile:
+        #         fls.append( path.join(self.d, self.csvFile[f]) )
+        # else:
+        r = {}
+        for root, subFolders, files in walk(self.d):
+            for file in files:
+                if len(regexes) == 0:
+                    fls.append(path.join(root, file))
+                else:
+                    add_file = 0
+                    for r in regexes:
+                        if r[2].search(path.join(root, file)):
+                            add_file = 1
+                        else:
+                            add_file = 0
+                            break
 
-
+                    if add_file == 1:
+                        if self.csvFile:
+                            for f in self.csvFile:
+                                if self.csvFile[f] in path.join(root, file):
+                                    fls.append(path.join(root, file))
+                        else:
+                            fls.append(path.join(root, file))
 
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")

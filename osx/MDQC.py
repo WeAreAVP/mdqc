@@ -364,7 +364,7 @@ class MainWin(QMainWindow):
                 useMediaInfoFile  = True
         else:
             toolUsed = 'ef'
-        if len(tags) != 0 and str(self.dbox.text()) != "":
+        if len(tags) != 0 and str(self.dbox.text()) != "" and (len(regexes) > 0 or self.csvSelectInput.text()):
             endsWith = ""
             try:
                 print regexes
@@ -375,28 +375,37 @@ class MainWin(QMainWindow):
             except:
                 print "exc"
 
-            print self.csvSelectInput.text()
-            print endsWith
             filesList = {}
             k = 0
+            # and endsWith != ""
             if endsWith == "":
                 print "Empty EndsWith: " + endsWith
-            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" and endsWith != "":
+            if self.csvSelectInput.text() and self.csvSelectInput.text() != "" :
                 with open(str(self.csvSelectInput.text()), 'r') as f:
                     print f
                     for row in csv.reader(f.read().splitlines()):
-                        filesList[k] = row[0] + endsWith
+                        filesList[k] = row[0]
                         k = k + 1
 
             else:
                 print "CSV file failed to parse."
             self.v = Scanner(str(self.dbox.text()).rstrip(), toolUsed, filesList, useMediaInfoFile)
         else:
-            QMessageBox.warning(self, "Metadata Quality Control",
-                                "Cannot test - rules/directory must be set")
+            if len(tags) == 0:
+                QMessageBox.warning(self, "Metadata Quality Control", "Cannot test - Metadata Rules must be set.")
+            elif str(self.dbox.text()) == "":
+                QMessageBox.warning(self, "Metadata Quality Control", "Cannot test - Scan Directory must be selected.")
+            elif len(regexes) == 0 and self.csvSelectInput.text() == "":
+                QMessageBox.warning(self, "Metadata Quality Control",
+                                    "Cannot test - Please select Base file or set Scan Rules.")
+            else:
+                QMessageBox.warning(self, "Metadata Quality Control", "Cannot test - Please fill in all fields and try again.")
 
 
-    # sets csv file from user option
+
+
+
+# sets csv file from user option
     def setCsvFile(self):
         self.csvSelectInput.setText(QFileDialog.getOpenFileName(
                             dir=path.expanduser('~') + "/Desktop/")[0])
@@ -718,17 +727,32 @@ class Scanner(QWidget):
             report.write("Match all files\n")
         fls = []
         report.write("\nVALIDATION\n")
-        if self.csvFile:
-            for f in self.csvFile:
-                print self.csvFile[f]
-                fls.append( path.join(self.d, self.csvFile[f]) )
-        else:
-            for root, subFolders, files in walk(self.d):
-                for file in files:
-                    if len(regexes) == 0:
-                        fls.append(path.join(root, file))
-                    elif all(r[2].search(path.join(root, file)) for r in regexes):
-                        fls.append(path.join(root, file))
+        # if self.csvFile:
+        #     for f in self.csvFile:
+        #         print self.csvFile[f]
+        #         fls.append( path.join(self.d, self.csvFile[f]) )
+        # else:
+        r = {}
+        for root, subFolders, files in walk(self.d):
+            for file in files:
+                if len(regexes) == 0:
+                    fls.append(path.join(root, file))
+                else:
+                    add_file = 0
+                    for r in regexes:
+                        if r[2].search(path.join(root, file)):
+                            add_file = 1
+                        else:
+                            add_file = 0
+                            break
+
+                    if add_file == 1:
+                        if self.csvFile:
+                            for f in self.csvFile:
+                                if self.csvFile[f] in path.join(root, file):
+                                    fls.append(path.join(root, file))
+                        else:
+                            fls.append(path.join(root, file))
 
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")

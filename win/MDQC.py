@@ -273,7 +273,8 @@ class MainWin(QMainWindow):
                 useMediaInfoFile  = True
         else:
             toolUsed = 'ef'
-        if len(tags) != 0 and str(self.dbox.text()) != "" and (len(regexes) > 0 or self.csvSelectInput.text()):
+        # and (len(regexes) > 0 or self.csvSelectInput.text())
+        if len(tags) != 0 and str(self.dbox.text()) != "":
             endsWith = ""
             try:
                 print regexes
@@ -617,24 +618,31 @@ class Scanner(QWidget):
         r = {}
         for root, subFolders, files in walk(self.d):
             for file in files:
-                if len(regexes) == 0:
+                if len(regexes) <= 0 and len(self.csvFile) <= 0:
                     fls.append(path.join(root, file))
-                else:
+                elif len(regexes) <= 0 and len(self.csvFile) > 0:
+                    for f in self.csvFile:
+                        if self.csvFile[f] in path.join(root, file):
+                            fls.append(path.join(root, file))
+                elif len(regexes) > 0 and len(self.csvFile) > 0:
                     add_file = 0
                     for r in regexes:
-                        if r[2].search(path.join(root, file)):
+                        if all(r[2].search(path.join(root, file)) for r in regexes):
                             add_file = 1
                         else:
                             add_file = 0
                             break
 
                     if add_file == 1:
-                        if self.csvFile:
+                        if len(self.csvFile) > 0:
                             for f in self.csvFile:
                                 if self.csvFile[f] in path.join(root, file):
                                     fls.append(path.join(root, file))
                         else:
                             fls.append(path.join(root, file))
+                elif len(regexes) > 0 and len(self.csvFile) <= 0:
+                    if all(r[2].search(path.join(root, file)) for r in regexes):
+                        fls.append(path.join(root, file))
 
         if self.toolUsed == 'ef':
             self.te.append("\nTool:: ExifTool \n")

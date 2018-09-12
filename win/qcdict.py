@@ -130,13 +130,46 @@ def mnfoMeta(file, useMediaInfoFile):
         out = p.communicate()[0].splitlines()
         print lineno(), out
     else:
-        try:
-            import io
-            f = io.open(file, mode="r", encoding="utf-8").read()
-            out = f.splitlines()
-        except:
+        # Import Pretty Print only for MediaInfo Type.
+        import pprint
+
+        # Extract extension and file name from path.
+        fileName, fileExtension = os.path.splitext(file)
+
+        # If file extension is xml.
+        if fileExtension == ".xml":
+
+            import xml.etree.ElementTree as ET
             out = []
-        print lineno(), out
+
+            # Create XML Object from Element Tree Parsing.
+            parsedXmlElements = ET.parse(file)
+
+            # Loop through all the Elements.
+            for singleElement in parsedXmlElements.iter():
+
+                # If Parent Element Found.
+                if(singleElement.text == None):
+
+                    # Discard Element value.
+                    out.append(singleElement.tag)
+                else:
+
+                    # Add String containing format acceptable by Latter functionality.
+                    out.append(singleElement.tag +" :"+ singleElement.text)
+
+            print lineno(), out
+            pprint.pprint(out)
+
+        else:
+            try:
+                import io
+                f = io.open(file, mode="r", encoding="utf-8").read()
+                out = f.splitlines()
+            except:
+                out = []
+            print lineno(), out
+            pprint.pprint(out)
     
     # formats the list into a dictionary
     prefix = ""
@@ -154,6 +187,7 @@ def mnfoMeta(file, useMediaInfoFile):
         except Exception as e:
             print lineno(), e
             pass
+
     return meta
 
 # verify ( (tag, comparator, value), metadata dictionary )

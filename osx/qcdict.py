@@ -10,6 +10,7 @@ from os import path
 import time
 from re import compile, findall, UNICODE
 import sys
+import os
 
 # template (text file)
 # generates a set of rules from a text file
@@ -92,12 +93,44 @@ def mnfoMeta(file, useMediaInfoFile):
                             stdout=subprocess.PIPE)
         out = p.communicate()[0].splitlines()
     else:
-        try:
-            import io
-            f = io.open(file, mode="r", encoding="utf-8").read()
-            out = f.splitlines()
-        except:
+
+         # Import Pretty Print only for MediaInfo Type.
+        import pprint
+
+        # Extract extension and file name from path.
+        fileName, fileExtension = os.path.splitext(file)
+
+        # If file extension is xml.
+        if fileExtension == ".xml":
+
+            import xml.etree.ElementTree as ET
             out = []
+
+            # Create XML Object from Element Tree Parsing.
+            parsedXmlElements = ET.parse(file)
+
+            # Loop through all the Elements.
+            for singleElement in parsedXmlElements.iter():
+
+                # If Parent Element Found.
+                if(singleElement.text == None):
+
+                    # Discard Element value.
+                    out.append(singleElement.tag)
+                else:
+
+                    # Add String containing format acceptable by Latter functionality.
+                    out.append(singleElement.tag +" :"+ singleElement.text)
+
+          
+        else:
+
+            try:
+                import io
+                f = io.open(file, mode="r", encoding="utf-8").read()
+                out = f.splitlines()
+            except:
+                out = []
 
     # formats the list into a dictionary
     prefix = ""

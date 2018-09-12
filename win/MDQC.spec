@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['MDQC.py'],
-             pathex=['tools', 'E:\\Projects\\mdqc\\win'],
+             pathex=['tools', 'C:\\Users\\xoho\\Documents\\mdqc\\win\\tools'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -19,7 +19,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
-          Tree('E:\\Projects\\mdqc\\win\\tools', prefix='tools\\'),
+          Tree('C:\\Users\\xoho\\Documents\\mdqc\\win\\tools', prefix='tools\\'),
           a.zipfiles,
           a.datas,
           name='MDQC',

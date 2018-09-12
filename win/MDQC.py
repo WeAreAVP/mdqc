@@ -261,7 +261,7 @@ class MainWin(QMainWindow):
         fileDialog.setNameFilters(["CSV File (*.csv)"])
         self.csvSelectInput.setText(fileDialog.getOpenFileName(
                             dir=path.expanduser('~') + "\\Desktop\\")[0])
-        self.clearer()
+        # self.clearer()
 
 
     # begins test

@@ -24,10 +24,13 @@ import csv
 # vals: QLineEdits containing values
 # adds: QPushButtons set to duplicate rows
 global reportdir
+global mdReportsDir
 regexes, tags, ops, vals, adds = [], [], [], [], []
 
 reportdir = sys.executable[:sys.executable.rfind('/')] + "/../../.."
 isReportDir = ""
+mdReportsDir = ""
+
 print reportdir
 
 
@@ -39,8 +42,10 @@ class MainWin(QMainWindow):
         self.configuration = Configuration.Configuration()
         menubar = self.menuBar()
 
+        print reportdir
         #check if output dir available
         testLogpath = reportdir +str(sep) + "mdqc.log"
+        print reportdir
         try:
             open(path.abspath(testLogpath), 'w')
 
@@ -90,7 +95,7 @@ class MainWin(QMainWindow):
 
         save.triggered.connect(self.saveTemplate)
         load.triggered.connect(self.loadTemplate)
-        rdir.triggered.connect(self.reportDir)
+        rdir.triggered.connect(self.mdReportsDir)
         self.about_mdqc_menu.triggered.connect(self.aboutMDQC)
 
         quit.triggered.connect(qApp.quit)
@@ -336,6 +341,12 @@ class MainWin(QMainWindow):
     def reportDir(self):
         global reportdir
         reportdir = QFileDialog.getExistingDirectory(dir=reportdir)
+
+    def mdReportsDir(self):
+        global mdReportsDir
+        global reportdir
+        reportdir = mdReportsDir = QFileDialog.getExistingDirectory(dir=mdReportsDir)
+
 
     def aboutMDQC(self):
         self.about_mdqc_gui.Cancel()
@@ -648,7 +659,13 @@ class Scanner(QWidget):
         return rules
 
     def test(self, useMediaInfoFile = False):
+        global mdReportsDir
+
         documentPath = os.path.expanduser('~/Documents/') +'MDQC Reports'+str(sep)
+
+        if mdReportsDir.strip() :
+            documentPath = mdReportsDir +'/MDQC Reports'+str(sep)
+
 
         if not os.path.exists(documentPath):
             try:
